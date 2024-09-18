@@ -1,6 +1,6 @@
 using Hackathon.Model;
 
-namespace Hackathon
+namespace Hackathon.Service
 {
     public class CsvReader
     {

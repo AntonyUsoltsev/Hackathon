@@ -1,5 +1,4 @@
 using Hackathon.Model;
-using Hackathon.Strategy;
 
 namespace Hackathon.Service.Strategy;
 

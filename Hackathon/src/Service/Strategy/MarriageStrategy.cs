@@ -1,122 +1,77 @@
-using System.Collections;
 using Hackathon.Model;
-using Hackathon.Strategy;
 
-namespace Hackathon
+namespace Hackathon.Service.Strategy
 {
     public class MarriageStrategy : ITeamBuildingStrategy
     {
-        enum Answer
-        {
-            No = 0,
-            Maybe = 1,
-            Yes = 2
-        }
-
         public IEnumerable<Team> BuildTeams(
             IEnumerable<Employee> teamLeads,
             IEnumerable<Employee> juniors,
             IEnumerable<Wishlist> teamLeadsWishlists,
             IEnumerable<Wishlist> juniorsWishlists)
         {
-            Dictionary<(int teamLeadId, int juniorId), Answer> offers = new Dictionary<(int, int), Answer>();
+            var currentMatches = new Dictionary<int, int?>();
 
-            Dictionary<int, IEnumerator> teamLeadsChoosesEnumerators = new Dictionary<int, IEnumerator>();
+            var proposals = WishListToDictionary(teamLeads, teamLeadsWishlists);
 
-            foreach (var tlWishlist in teamLeadsWishlists)
+            var freeTeamLeads = new Queue<int>(teamLeads.Select(t => t.Id));
+
+            while (freeTeamLeads.Count > 0)
             {
-                teamLeadsChoosesEnumerators.Add(tlWishlist.EmployeeId,
-                    tlWishlist.DesiredEmployees.GetEnumerator());
-            }
+                var teamLeadId = freeTeamLeads.Dequeue();
+                var preferences = proposals[teamLeadId];
 
-            while (teamLeadsChoosesEnumerators.Count > 0)
-            {
-                foreach (var tlWishlist in teamLeadsWishlists)
+                foreach (var juniorId in preferences)
                 {
-                    int teamLeadId = tlWishlist.EmployeeId;
-
-                    if (!teamLeadsChoosesEnumerators.ContainsKey(teamLeadId))
-                        continue;
-
-                    if (teamLeadsChoosesEnumerators[teamLeadId].MoveNext())
+                    if (!currentMatches.ContainsValue(juniorId))
                     {
-                        int juniorId = (int)teamLeadsChoosesEnumerators[teamLeadId].Current;
-
-                        if (offers.ContainsKey((teamLeadId, juniorId)) && offers[(teamLeadId, juniorId)] != Answer.No)
-                            continue;
-
-                        int juniorNewPriority = Array.IndexOf(
-                            juniorsWishlists.First(it => it.EmployeeId == juniorId).DesiredEmployees,
-                            teamLeadId
-                        );
-
-                        var juniorCurrentOffer = offers
-                            .Where(o => o.Key.juniorId == juniorId && o.Value != Answer.No)
-                            .FirstOrDefault();
-                        int juniorCurrentPriority = -1;
-                        int currentTeamLead = -1;
-
-                        if (juniorCurrentOffer.Key != default)
-                        {
-                            currentTeamLead = juniorCurrentOffer.Key.teamLeadId;
-                            juniorCurrentPriority = Array.IndexOf(
-                                juniorsWishlists.First(it => it.EmployeeId == juniorId).DesiredEmployees,
-                                currentTeamLead
-                            );
-                        }
-
-                        if (juniorNewPriority == 0)
-                        {
-                            offers[(teamLeadId, juniorId)] = Answer.Yes;
-                            if (currentTeamLead != -1)
-                            {
-                                offers[(currentTeamLead, juniorId)] = Answer.No;
-                            }
-                        }
-                        else if (juniorCurrentPriority == -1 || juniorNewPriority < juniorCurrentPriority)
-                        {
-                            offers[(teamLeadId, juniorId)] = Answer.Maybe;
-
-                            if (currentTeamLead != -1)
-                            {
-                                offers[(currentTeamLead, juniorId)] = Answer.No;
-                            }
-                        }
-
+                        // Временно принимаем предложение
+                        currentMatches[teamLeadId] = juniorId;
                         break;
                     }
-
-                    if (!teamLeadsChoosesEnumerators[teamLeadId].MoveNext())
+                    else
                     {
-                        teamLeadsChoosesEnumerators.Remove(teamLeadId);
+                        var currentTeamLeadId = currentMatches.FirstOrDefault(x => x.Value == juniorId).Key;
+
+                        var juniorWishlist = juniorsWishlists.First(w => w.EmployeeId == juniorId).DesiredEmployees;
+
+                        if (Array.IndexOf(juniorWishlist, teamLeadId) <
+                            Array.IndexOf(juniorWishlist, currentTeamLeadId))
+                        {
+                            currentMatches[currentTeamLeadId] = null; // Отказываем текущему Team Lead
+                            currentMatches[teamLeadId] = juniorId; // Принять новое предложение
+                            freeTeamLeads.Enqueue(currentTeamLeadId); // Возвращаем текущего Team Lead в очередь
+                            break;
+                        }
                     }
                 }
             }
 
-            var teams = BuildTeamsFromOffers(teamLeads, offers);
-
+            var teams = BuildTeamsFromOffers(teamLeads, currentMatches);
             return teams;
         }
 
-        private List<Team> BuildTeamsFromOffers(IEnumerable<Employee> teamLeads, Dictionary<(int teamLeadId, int juniorId), Answer> offers)
+        private Dictionary<int, List<int>> WishListToDictionary(IEnumerable<Employee> teamLeads,
+            IEnumerable<Wishlist> teamLeadsWishlists)
         {
-            foreach (var offer in offers.ToList())
+            var proposals = teamLeads.ToDictionary(t => t.Id, t => new List<int>());
+            foreach (var wishlist in teamLeadsWishlists)
             {
-                if (offer.Value == Answer.Maybe)
-                {
-                    offers[offer.Key] = Answer.Yes;
-                }
+                proposals[wishlist.EmployeeId].AddRange(wishlist.DesiredEmployees);
             }
 
+            return proposals;
+        }
+
+        private List<Team> BuildTeamsFromOffers(IEnumerable<Employee> teamLeads, Dictionary<int, int?> currentMatches)
+        {
             var teams = new List<Team>();
-
-            foreach (var offer in offers)
+            foreach (var match in currentMatches)
             {
-                if (offer.Value == Answer.Yes)
+                if (match.Value.HasValue)
                 {
-                    var teamLead = teamLeads.First(tl => tl.Id == offer.Key.teamLeadId);
-                    var junior = teamLeads.First(jn => jn.Id == offer.Key.juniorId);
-
+                    var teamLead = teamLeads.First(tl => tl.Id == match.Key);
+                    var junior = teamLeads.First(jn => jn.Id == match.Value);
                     teams.Add(new Team(teamLead, junior));
                 }
             }

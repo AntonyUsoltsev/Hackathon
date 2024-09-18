@@ -1,6 +1,6 @@
 using Hackathon.Model;
 
-namespace Hackathon.Strategy;
+namespace Hackathon.Service.Strategy;
 
 public interface ITeamBuildingStrategy
 {

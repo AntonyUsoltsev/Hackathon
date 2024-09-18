@@ -1,11 +1,12 @@
 ﻿using Hackathon.Model;
-using Hackathon.Strategy;
+using Hackathon.Service;
+using Hackathon.Service.Strategy;
 
 namespace Hackathon
 {
     internal class Program
     {
-        public static int repeatNumber = 1000;
+        private static int _repeatNumber = 1000;
 
         public static void Main(string[] args)
         {
@@ -14,12 +15,13 @@ namespace Hackathon
             double maxAccuracy = double.MinValue;
             double totalAccuracy = 0;
             ITeamBuildingStrategy teamBuildingStrategy = new MarriageStrategy();
-            for (int i = 0; i < repeatNumber; i++)
+            for (int i = 0; i < _repeatNumber; i++)
             {
                 List<Wishlist> teamleadsWishlists = WishlistService.BuildWishlist(teamleads, juniors);
                 List<Wishlist> juniorsWishlists = WishlistService.BuildWishlist(juniors, teamleads);
 
-                IEnumerable<Team> teams = teamBuildingStrategy.BuildTeams(teamleads, juniors, teamleadsWishlists, juniorsWishlists);
+                IEnumerable<Team> teams =
+                    teamBuildingStrategy.BuildTeams(teamleads, juniors, teamleadsWishlists, juniorsWishlists);
 
                 double accuracy = HarmonicMeanCount.CountSatisfaction(teams, teamleadsWishlists, juniorsWishlists);
                 Console.WriteLine($"Accuracy: {accuracy} on iter {i}");
@@ -28,7 +30,7 @@ namespace Hackathon
             }
 
             Console.WriteLine($"Max accuracy: {maxAccuracy}");
-            Console.WriteLine($"Average accuracy: {totalAccuracy / repeatNumber}");
+            Console.WriteLine($"Average accuracy: {totalAccuracy / _repeatNumber}");
         }
 
         public static void PrintWishlist(List<Wishlist> wishlists)

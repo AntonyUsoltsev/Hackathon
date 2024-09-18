@@ -1,6 +1,6 @@
 using Hackathon.Model;
 
-namespace Hackathon
+namespace Hackathon.Service
 {
     public class HarmonicMeanCount
     {
@@ -11,7 +11,7 @@ namespace Hackathon
         {
             int participantCount = teams.Count();
             List<int> allSatisfactions = new List<int>();
-            foreach (var team in teams)
+            foreach (Team team in teams)
             {
                 var teamLeadWishlist = teamLeadsWishlists.First(tl => tl.EmployeeId == team.TeamLead.Id);
                 var teamLeadSat = participantCount - Array.IndexOf(teamLeadWishlist.DesiredEmployees, team.Junior.Id);
@@ -26,14 +26,7 @@ namespace Hackathon
 
         private static double CountHarmonicMean(List<int> numbers)
         {
-            double inverseSum = 0;
-            Console.WriteLine(String.Join(", ", numbers));
-            foreach (var number in numbers)
-            {
-                inverseSum += 1d / number;
-            }
-
-            return numbers.Count / inverseSum;
+            return numbers.Count / numbers.Sum(number => 1d / number);
         }
     }
 }
