@@ -9,15 +9,16 @@ namespace Hackathon.Service
             IEnumerable<Wishlist> teamLeadsWishlists,
             IEnumerable<Wishlist> juniorsWishlists)
         {
+            
             int participantCount = teams.Count();
-            List<int> allSatisfactions = new List<int>();
+            var allSatisfactions = new List<int>();
             foreach (Team team in teams)
             {
                 var teamLeadWishlist = teamLeadsWishlists.First(tl => tl.EmployeeId == team.TeamLead.Id);
-                var teamLeadSat = participantCount - Array.IndexOf(teamLeadWishlist.DesiredEmployees, team.Junior.Id);
+                int teamLeadSat = participantCount - Array.IndexOf(teamLeadWishlist.DesiredEmployees, team.Junior.Id);
                 allSatisfactions.Add(teamLeadSat);
                 var juniorWishList = juniorsWishlists.First(jl => jl.EmployeeId == team.Junior.Id);
-                var juniorSat = participantCount - Array.IndexOf(juniorWishList.DesiredEmployees, team.TeamLead.Id);
+                int juniorSat = participantCount - Array.IndexOf(juniorWishList.DesiredEmployees, team.TeamLead.Id);
                 allSatisfactions.Add(juniorSat);
             }
 

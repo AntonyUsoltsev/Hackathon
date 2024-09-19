@@ -4,7 +4,7 @@ namespace Hackathon.Service
 {
     public class WishlistService
     {
-        private static Random random = new Random();
+        private static Random _random = new Random();
 
         public static List<Wishlist> BuildWishlist(List<Employee> selectors, List<Employee> chooseables)
         {
@@ -12,7 +12,7 @@ namespace Hackathon.Service
             IEnumerable<int> chooseableIds = from с in chooseables select с.Id;
             foreach (var selector in selectors)
             {
-                List<int> shuffledNumbers = chooseableIds.OrderBy(x => random.Next()).ToList();
+                List<int> shuffledNumbers = chooseableIds.OrderBy(x => _random.Next()).ToList();
                 Wishlist wishlist = new Wishlist(selector.Id, shuffledNumbers.ToArray());
                 wishlists.Add(wishlist);
             }

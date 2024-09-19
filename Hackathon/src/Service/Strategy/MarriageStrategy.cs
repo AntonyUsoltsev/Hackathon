@@ -12,16 +12,16 @@ namespace Hackathon.Service.Strategy
         {
             var currentMatches = new Dictionary<int, int?>();
 
-            var proposals = WishListToDictionary(teamLeads, teamLeadsWishlists);
+            Dictionary<int, List<int>> wishListDictionary = WishListToDictionary(teamLeads, teamLeadsWishlists);
 
             var freeTeamLeads = new Queue<int>(teamLeads.Select(t => t.Id));
 
             while (freeTeamLeads.Count > 0)
             {
-                var teamLeadId = freeTeamLeads.Dequeue();
-                var preferences = proposals[teamLeadId];
+                int teamLeadId = freeTeamLeads.Dequeue();
+                List<int> preferences = wishListDictionary[teamLeadId];
 
-                foreach (var juniorId in preferences)
+                foreach (int juniorId in preferences)
                 {
                     if (!currentMatches.ContainsValue(juniorId))
                     {
@@ -31,15 +31,15 @@ namespace Hackathon.Service.Strategy
                     }
                     else
                     {
-                        var currentTeamLeadId = currentMatches.FirstOrDefault(x => x.Value == juniorId).Key;
+                        int currentTeamLeadId = currentMatches.FirstOrDefault(x => x.Value == juniorId).Key;
 
-                        var juniorWishlist = juniorsWishlists.First(w => w.EmployeeId == juniorId).DesiredEmployees;
+                        int[] juniorPreferences = juniorsWishlists.First(w => w.EmployeeId == juniorId).DesiredEmployees;
 
-                        if (Array.IndexOf(juniorWishlist, teamLeadId) <
-                            Array.IndexOf(juniorWishlist, currentTeamLeadId))
+                        if (Array.IndexOf(juniorPreferences, teamLeadId) <
+                            Array.IndexOf(juniorPreferences, currentTeamLeadId))
                         {
                             currentMatches[currentTeamLeadId] = null; // Отказываем текущему Team Lead
-                            currentMatches[teamLeadId] = juniorId; // Принять новое предложение
+                            currentMatches[teamLeadId] = juniorId;    // Принимаем новое предложение
                             freeTeamLeads.Enqueue(currentTeamLeadId); // Возвращаем текущего Team Lead в очередь
                             break;
                         }
@@ -47,20 +47,20 @@ namespace Hackathon.Service.Strategy
                 }
             }
 
-            var teams = BuildTeamsFromOffers(teamLeads, currentMatches);
+            List<Team> teams = BuildTeamsFromOffers(teamLeads, currentMatches);
             return teams;
         }
 
         private Dictionary<int, List<int>> WishListToDictionary(IEnumerable<Employee> teamLeads,
             IEnumerable<Wishlist> teamLeadsWishlists)
         {
-            var proposals = teamLeads.ToDictionary(t => t.Id, t => new List<int>());
+            Dictionary<int, List<int>> dict = teamLeads.ToDictionary(t => t.Id, t => new List<int>());
             foreach (var wishlist in teamLeadsWishlists)
             {
-                proposals[wishlist.EmployeeId].AddRange(wishlist.DesiredEmployees);
+                dict[wishlist.EmployeeId].AddRange(wishlist.DesiredEmployees);
             }
 
-            return proposals;
+            return dict;
         }
 
         private List<Team> BuildTeamsFromOffers(IEnumerable<Employee> teamLeads, Dictionary<int, int?> currentMatches)
