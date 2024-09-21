@@ -33,13 +33,14 @@ namespace Hackathon.Service.Strategy
                     {
                         int currentTeamLeadId = currentMatches.FirstOrDefault(x => x.Value == juniorId).Key;
 
-                        int[] juniorPreferences = juniorsWishlists.First(w => w.EmployeeId == juniorId).DesiredEmployees;
+                        int[] juniorPreferences =
+                            juniorsWishlists.First(w => w.EmployeeId == juniorId).DesiredEmployees;
 
                         if (Array.IndexOf(juniorPreferences, teamLeadId) <
                             Array.IndexOf(juniorPreferences, currentTeamLeadId))
                         {
                             currentMatches[currentTeamLeadId] = null; // Отказываем текущему Team Lead
-                            currentMatches[teamLeadId] = juniorId;    // Принимаем новое предложение
+                            currentMatches[teamLeadId] = juniorId; // Принимаем новое предложение
                             freeTeamLeads.Enqueue(currentTeamLeadId); // Возвращаем текущего Team Lead в очередь
                             break;
                         }
