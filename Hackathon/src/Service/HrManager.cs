@@ -12,7 +12,8 @@ public class HrManager
         _strategy = strategy;
     }
 
-    public IEnumerable<Team> FormTeams(IEnumerable<Employee> teamLeads,
+    public virtual IEnumerable<Team> FormTeams(
+        IEnumerable<Employee> teamLeads,
         IEnumerable<Employee> juniors,
         IEnumerable<Wishlist> teamLeadsWishlists,
         IEnumerable<Wishlist> juniorsWishlists)

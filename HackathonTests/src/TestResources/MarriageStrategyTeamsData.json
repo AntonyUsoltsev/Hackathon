@@ -1,0 +1,37 @@
+{
+  "TeamLeads": [
+    { "Id": 1, "Name": "TeamLead1" },
+    { "Id": 2, "Name": "TeamLead2" },
+    { "Id": 3, "Name": "TeamLead3" }
+  ],
+  "Juniors": [
+    { "Id": 1, "Name": "Junior1" },
+    { "Id": 2, "Name": "Junior2" },
+    { "Id": 3, "Name": "Junior3" }
+  ],
+  "TeamLeadsWishlists": [
+    { "EmployeeId": 1, "DesiredEmployees": [1, 2, 3] },
+    { "EmployeeId": 2, "DesiredEmployees": [3, 2, 1] },
+    { "EmployeeId": 3, "DesiredEmployees": [2, 3, 1] }
+  ],
+  "JuniorsWishlists": [
+    { "EmployeeId": 1, "DesiredEmployees": [2, 1, 3] },
+    { "EmployeeId": 2, "DesiredEmployees": [1, 2, 3] },
+    { "EmployeeId": 3, "DesiredEmployees": [1, 3, 2] }
+  ],
+  "Teams": [
+    { 
+      "TeamLead": {"Id": 1, "Name": "TeamLead1" },
+      "Junior": { "Id": 1, "Name": "Junior1" }
+    },
+    { 
+      "TeamLead": { "Id": 2, "Name": "TeamLead2" },
+      "Junior": { "Id": 3, "Name": "Junior3" }
+    },
+    { 
+      "TeamLead": {"Id": 3, "Name": "TeamLead3" },
+      "Junior":  { "Id": 2, "Name": "Junior2" }
+    }
+  ],
+  "SatIndex": 1.714
+}

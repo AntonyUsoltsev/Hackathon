@@ -48,7 +48,7 @@ namespace Hackathon.Service.Strategy
                 }
             }
 
-            List<Team> teams = BuildTeamsFromOffers(teamLeads, currentMatches);
+            List<Team> teams = BuildTeamsFromOffers(currentMatches, teamLeads, juniors);
             return teams;
         }
 
@@ -64,7 +64,8 @@ namespace Hackathon.Service.Strategy
             return dict;
         }
 
-        private List<Team> BuildTeamsFromOffers(IEnumerable<Employee> teamLeads, Dictionary<int, int?> currentMatches)
+        private List<Team> BuildTeamsFromOffers(Dictionary<int, int?> currentMatches, IEnumerable<Employee> teamLeads,
+            IEnumerable<Employee> juniors)
         {
             var teams = new List<Team>();
             foreach (var match in currentMatches)
@@ -72,7 +73,7 @@ namespace Hackathon.Service.Strategy
                 if (match.Value.HasValue)
                 {
                     var teamLead = teamLeads.First(tl => tl.Id == match.Key);
-                    var junior = teamLeads.First(jn => jn.Id == match.Value);
+                    var junior = juniors.First(jn => jn.Id == match.Value);
                     teams.Add(new Team(teamLead, junior));
                 }
             }

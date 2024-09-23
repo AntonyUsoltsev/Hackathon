@@ -25,7 +25,7 @@ namespace Hackathon.Service
             return CountHarmonicMean(allSatisfactions);
         }
 
-        private static double CountHarmonicMean(List<int> numbers)
+        public static double CountHarmonicMean(List<int> numbers)
         {
             return numbers.Count / numbers.Sum(number => 1d / number);
         }

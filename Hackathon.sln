@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hackathon", "Hackathon\Hackathon.csproj", "{8D722E05-5D27-4376-BDB4-B48616D0C65D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HackathonTests", "HackathonTests\HackathonTests.csproj", "{6D7143E3-EEE9-4A91-910F-C4A307A5D4A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{8D722E05-5D27-4376-BDB4-B48616D0C65D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D722E05-5D27-4376-BDB4-B48616D0C65D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D722E05-5D27-4376-BDB4-B48616D0C65D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D7143E3-EEE9-4A91-910F-C4A307A5D4A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D7143E3-EEE9-4A91-910F-C4A307A5D4A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D7143E3-EEE9-4A91-910F-C4A307A5D4A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D7143E3-EEE9-4A91-910F-C4A307A5D4A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
