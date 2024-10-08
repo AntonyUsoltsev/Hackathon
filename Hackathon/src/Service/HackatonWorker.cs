@@ -4,9 +4,13 @@ using Microsoft.Extensions.Hosting;
 
 namespace Hackathon.Service;
 
-public class HackathonWorker(Hackathon hackathon, EmployeeRepository employeeRepository) : IHostedService
+public class HackathonWorker(
+    Hackathon hackathon,
+    EmployeeRepository employeeRepository,
+    HackathonRepository hackathonRepository,
+    WishlistRepository wishlistRepository) : IHostedService
 {
-    private static int _repeatNumber = 1000;
+    private static int _repeatNumber = 1;
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
@@ -17,10 +21,17 @@ public class HackathonWorker(Hackathon hackathon, EmployeeRepository employeeRep
 
         for (int i = 0; i < _repeatNumber; i++)
         {
+            var hackathonDto = hackathonRepository.CreateEmptyHackathon();
+
             List<Wishlist> teamLeadsWishlists = WishlistService.BuildWishlist(teamLeads, juniors);
             List<Wishlist> juniorsWishlists = WishlistService.BuildWishlist(juniors, teamLeads);
+            teamLeadsWishlists.ForEach(wl => wishlistRepository.SaveWishlist(wl, hackathonDto.Id));
+            juniorsWishlists.ForEach(wl => wishlistRepository.SaveWishlist(wl, hackathonDto.Id));
 
-            double accuracy = hackathon.Conduct(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists);
+            double accuracy =
+                hackathon.Conduct(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists, hackathonDto.Id);
+
+            hackathonRepository.UpdateHackathonResult(hackathonDto.Id, accuracy);
 
             Console.WriteLine($"Accuracy: {accuracy} on iteration {i}");
             maxAccuracy = Math.Max(maxAccuracy, accuracy);

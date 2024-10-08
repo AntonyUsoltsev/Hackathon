@@ -16,14 +16,14 @@ internal class Program
         var host = Host.CreateDefaultBuilder(args)
             .ConfigureServices((hostContext, services) =>
             {
-                string? connectionString = hostContext.Configuration.GetConnectionString("DefaultConnection");
+                string connectionString = hostContext.Configuration.GetConnectionString("DefaultConnection");
                 services.AddDbContext<HackathonContext>(options => options.UseNpgsql(connectionString));
                 services.AddHostedService<HackathonWorker>();
                 services.AddTransient<Service.Hackathon>();
                 services.AddTransient<ITeamBuildingStrategy, MarriageStrategy>();
                 services.AddTransient<HrManager>();
                 services.AddTransient<HrDirector>();
-                
+
                 services.AddTransient<EmployeeRepository>();
                 services.AddTransient<HackathonRepository>();
                 services.AddTransient<WishlistRepository>();

@@ -1,24 +1,24 @@
 using Hackathon.Model;
+using Hackathon.Repository;
 
 namespace Hackathon.Service;
 
-public class Hackathon
+public class Hackathon(
+    HrManager hrManager,
+    HrDirector hrDirector,
+    TeamRepository teamRepository)
 {
-    private readonly HrManager _hrManager;
-    private readonly HrDirector _hrDirector;
-
-    public Hackathon(HrManager hrManager, HrDirector hrDirector)
-    {
-        _hrManager = hrManager;
-        _hrDirector = hrDirector;
-    }
-
     public double Conduct(IEnumerable<Employee> teamLeads,
         IEnumerable<Employee> juniors,
         IEnumerable<Wishlist> teamLeadsWishlists,
-        IEnumerable<Wishlist> juniorsWishlists)
+        IEnumerable<Wishlist> juniorsWishlists,
+        int hackathonId)
     {
-        IEnumerable<Team> teams = _hrManager.FormTeams(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists);
-        return _hrDirector.CalculateHarmony(teams, teamLeadsWishlists, juniorsWishlists);
+        List<Team> teams = hrManager.FormTeams(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists).ToList();
+        teams.ForEach(team => teamRepository.SaveTeam(team, hackathonId));
+
+        double result_harmony = hrDirector.CalculateHarmony(teams, teamLeadsWishlists, juniorsWishlists, hackathonId);
+
+        return result_harmony;
     }
 }

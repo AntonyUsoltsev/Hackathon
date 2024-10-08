@@ -3,21 +3,14 @@ using Hackathon.Service.Strategy;
 
 namespace Hackathon.Service;
 
-public class HrManager
+public class HrManager(ITeamBuildingStrategy strategy)
 {
-    private readonly ITeamBuildingStrategy _strategy;
-
-    public HrManager(ITeamBuildingStrategy strategy)
-    {
-        _strategy = strategy;
-    }
-
     public virtual IEnumerable<Team> FormTeams(
         IEnumerable<Employee> teamLeads,
         IEnumerable<Employee> juniors,
         IEnumerable<Wishlist> teamLeadsWishlists,
         IEnumerable<Wishlist> juniorsWishlists)
     {
-        return _strategy.BuildTeams(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists);
+        return strategy.BuildTeams(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists);
     }
 }

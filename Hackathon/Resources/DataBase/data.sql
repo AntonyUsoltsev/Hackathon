@@ -1,4 +1,4 @@
-INSERT INTO Employee (role, name)
+INSERT INTO Employees (role, name)
 VALUES ('junior', 'Юдин Адам'),
        ('junior', 'Яшина Яна'),
        ('junior', 'Никитина Вероника'),
@@ -20,7 +20,7 @@ VALUES ('junior', 'Юдин Адам'),
        ('junior', 'Капустина Елизавета'),
        ('junior', 'Костин Александр');
 
-INSERT INTO Employee (role, name)
+INSERT INTO Employees (role, name)
 VALUES ('teamLead', 'Филиппова Ульяна'),
        ('teamLead', 'Николаев Григорий'),
        ('teamLead', 'Андреева Вероника'),
@@ -41,3 +41,5 @@ VALUES ('teamLead', 'Филиппова Ульяна'),
        ('teamLead', 'Волков Артём'),
        ('teamLead', 'Панов Максим'),
        ('teamLead', 'Комаров Макар');
+
+

@@ -14,7 +14,7 @@ public class Mapper
     {
         return new Team(MapEmployee(teamLeadDto), MapEmployee(juniorDto));
     }
-    
+
     public static Wishlist MapWishlist(EmployeeDto employeeDto, int[] desiredEmployees)
     {
         return new Wishlist(employeeDto.Id, desiredEmployees);
