@@ -10,9 +10,9 @@ public class WishlistTests
     {
         // Setup
         List<Employee> teamLeads =
-            CsvReader.ReadCsv(@"D:\Antony\NSU_Education\7_Term\CSharp\Hackathon\Hackathon\Resources\Teamleads20.csv");
+            CsvReader.ReadCsv(@"..\..\..\..\Hackathon\Resources\Teamleads20.csv");
         List<Employee> juniors =
-            CsvReader.ReadCsv(@"D:\Antony\NSU_Education\7_Term\CSharp\Hackathon\Hackathon\Resources\Juniors20.csv");
+            CsvReader.ReadCsv(@"..\..\..\..\Hackathon\Resources\Juniors20.csv");
         List<Wishlist> teamLeadsWishlists = WishlistService.BuildWishlist(teamLeads, juniors);
         List<Wishlist> juniorsWishlists = WishlistService.BuildWishlist(juniors, teamLeads);
 

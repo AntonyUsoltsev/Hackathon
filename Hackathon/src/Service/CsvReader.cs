@@ -1,24 +1,23 @@
 using Hackathon.Model;
 
-namespace Hackathon.Service
+namespace Hackathon.Service;
+
+public class CsvReader
 {
-    public class CsvReader
+    public static List<Employee> ReadCsv(string filePath)
     {
-        public static List<Employee> ReadCsv(string filePath)
+        List<Employee> result = new List<Employee>();
+
+        var lines = File.ReadAllLines(filePath);
+        foreach (var line in lines)
         {
-            List<Employee> result = new List<Employee>();
-
-            var lines = File.ReadAllLines(filePath);
-            foreach (var line in lines)
+            var parts = line.Split(';');
+            if (int.TryParse(parts[0], out int id))
             {
-                var parts = line.Split(';');
-                if (int.TryParse(parts[0], out int id))
-                {
-                    result.Add(new Employee(id, parts[1]));
-                }
+                result.Add(new Employee(id, parts[1]));
             }
-
-            return result;
         }
+
+        return result;
     }
 }

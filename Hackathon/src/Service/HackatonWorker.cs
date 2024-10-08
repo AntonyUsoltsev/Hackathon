@@ -1,22 +1,17 @@
 using Hackathon.Model;
+using Hackathon.Repository;
 using Microsoft.Extensions.Hosting;
 
 namespace Hackathon.Service;
 
-public class HackathonWorker : IHostedService
+public class HackathonWorker(Hackathon hackathon, EmployeeRepository employeeRepository) : IHostedService
 {
-    private readonly Hackathon _hackathon;
     private static int _repeatNumber = 1000;
-
-    public HackathonWorker(Hackathon hackathon)
-    {
-        _hackathon = hackathon;
-    }
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        List<Employee> teamLeads = CsvReader.ReadCsv("Resources/Teamleads20.csv");
-        List<Employee> juniors = CsvReader.ReadCsv("Resources/Juniors20.csv");
+        List<Employee> teamLeads = employeeRepository.GetEmployeesByRole("teamLead").ToList();
+        List<Employee> juniors = employeeRepository.GetEmployeesByRole("junior").ToList();
         double maxAccuracy = double.MinValue;
         double totalAccuracy = 0;
 
@@ -25,7 +20,7 @@ public class HackathonWorker : IHostedService
             List<Wishlist> teamLeadsWishlists = WishlistService.BuildWishlist(teamLeads, juniors);
             List<Wishlist> juniorsWishlists = WishlistService.BuildWishlist(juniors, teamLeads);
 
-            double accuracy = _hackathon.Conduct(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists);
+            double accuracy = hackathon.Conduct(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists);
 
             Console.WriteLine($"Accuracy: {accuracy} on iteration {i}");
             maxAccuracy = Math.Max(maxAccuracy, accuracy);
