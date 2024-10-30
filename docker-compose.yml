@@ -1,0 +1,25 @@
+﻿services:
+  teamlead-1:
+    image:  teamlead-1
+    build:
+      context: .
+      dockerfile: EmployeeService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - EMPLOYEE_TYPE=teamLead
+      - EMPLOYEE_ID=1
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    
+#  database:
+#    image: postgres:latest
+#    container_name: hackathon_database
+#    environment:
+#      - POSTGRES_DB="hackathon_database"
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=postgres
+#    volumes:
+#      - ./.containers/hackathon-db:/var/lib/postgresql/data
+#    ports:
+#      - "5432:5432"
