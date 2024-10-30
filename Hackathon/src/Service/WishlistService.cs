@@ -8,12 +8,12 @@ public class WishlistService
 
     public static List<Wishlist> BuildWishlist(List<Employee> selectors, List<Employee> chooseables)
     {
-        List<Wishlist> wishlists = new List<Wishlist>();
+        var wishlists = new List<Wishlist>();
         IEnumerable<int> chooseableIds = from с in chooseables select с.Id;
         foreach (var selector in selectors)
         {
             List<int> shuffledNumbers = chooseableIds.OrderBy(x => _random.Next()).ToList();
-            Wishlist wishlist = new Wishlist(selector.Id, shuffledNumbers.ToArray());
+            var wishlist = new Wishlist(selector.Id, shuffledNumbers.ToArray());
             wishlists.Add(wishlist);
         }
 

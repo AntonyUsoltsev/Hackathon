@@ -15,8 +15,8 @@ public class Mapper
         return new Team(MapEmployee(teamLeadDto), MapEmployee(juniorDto));
     }
 
-    public static Wishlist MapWishlist(EmployeeDto employeeDto, int[] desiredEmployees)
+    public static Satisfaction MapSatisfaction(EmployeeDto employeeDto, int satisfactionRank)
     {
-        return new Wishlist(employeeDto.Id, desiredEmployees);
+        return new Satisfaction(MapEmployee(employeeDto), satisfactionRank);
     }
 }

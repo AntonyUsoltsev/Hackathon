@@ -36,11 +36,18 @@ public class HackathonRepository(HackathonContext context)
         return hackathonDto;
     }
 
-    public HackathonDto SaveNewHackathon(int resultHarmony)
+    public HackathonDto SaveNewHackathon(double resultHarmony)
     {
         var hackathonDto = new HackathonDto(resultHarmony);
         context.Hackathons.Add(hackathonDto);
         context.SaveChanges();
         return hackathonDto;
+    }
+
+    public double AverageResultHarmony()
+    {
+        double averageHarmony = context.Hackathons.Average(h => h.ResultHarmony);
+        Console.WriteLine($"Average Result Harmony: {averageHarmony}");
+        return averageHarmony;
     }
 }

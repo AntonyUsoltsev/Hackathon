@@ -3,9 +3,6 @@ using Hackathon.Repository;
 using Hackathon.Service;
 using Hackathon.Service.Strategy;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Hackathon;
 
@@ -13,25 +10,38 @@ internal class Program
 {
     public static void Main(string[] args)
     {
-        var host = Host.CreateDefaultBuilder(args)
-            .ConfigureServices((hostContext, services) =>
-            {
-                string connectionString = hostContext.Configuration.GetConnectionString("DefaultConnection");
-                services.AddDbContext<HackathonContext>(options => options.UseNpgsql(connectionString));
-                services.AddHostedService<HackathonWorker>();
-                services.AddTransient<Service.Hackathon>();
-                services.AddTransient<ITeamBuildingStrategy, MarriageStrategy>();
-                services.AddTransient<HrManager>();
-                services.AddTransient<HrDirector>();
+        var builder = WebApplication.CreateBuilder(args);
 
-                services.AddTransient<EmployeeRepository>();
-                services.AddTransient<HackathonRepository>();
-                services.AddTransient<WishlistRepository>();
-                services.AddTransient<SatisfactionRepository>();
-                services.AddTransient<TeamRepository>();
-            })
-            .Build();
+        string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        builder.Services.AddDbContext<HackathonContext>(options => options.UseNpgsql(connectionString));
 
-        host.Run();
+        builder.Services.AddControllers();
+        builder.Services.AddHttpClient();
+
+        builder.Services.AddHostedService<HackathonWorker>();
+        builder.Services.AddTransient<Service.Hackathon>();
+        builder.Services.AddTransient<ITeamBuildingStrategy, MarriageStrategy>();
+        builder.Services.AddTransient<HrManager>();
+        builder.Services.AddTransient<HrDirector>();
+
+        builder.Services.AddScoped<EmployeeRepository>();
+        builder.Services.AddScoped<HackathonRepository>();
+        builder.Services.AddScoped<WishlistRepository>();
+        builder.Services.AddScoped<SatisfactionRepository>();
+        builder.Services.AddScoped<TeamRepository>();
+
+        var app = builder.Build();
+        
+        
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+
+        app.UseRouting();
+
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        
+        app.Run();
     }
 }

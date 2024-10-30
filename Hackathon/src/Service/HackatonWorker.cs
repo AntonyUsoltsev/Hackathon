@@ -25,11 +25,10 @@ public class HackathonWorker(
 
             List<Wishlist> teamLeadsWishlists = WishlistService.BuildWishlist(teamLeads, juniors);
             List<Wishlist> juniorsWishlists = WishlistService.BuildWishlist(juniors, teamLeads);
-            teamLeadsWishlists.ForEach(wl => wishlistRepository.SaveWishlist(wl, hackathonDto.Id));
             juniorsWishlists.ForEach(wl => wishlistRepository.SaveWishlist(wl, hackathonDto.Id));
+            teamLeadsWishlists.ForEach(wl => wishlistRepository.SaveWishlist(wl, hackathonDto.Id));
 
-            double accuracy =
-                hackathon.Conduct(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists, hackathonDto.Id);
+            double accuracy = hackathon.Conduct(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists, hackathonDto.Id);
 
             hackathonRepository.UpdateHackathonResult(hackathonDto.Id, accuracy);
 

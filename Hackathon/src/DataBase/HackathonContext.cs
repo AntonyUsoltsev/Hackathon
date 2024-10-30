@@ -11,10 +11,11 @@ public class HackathonContext : DbContext
     public DbSet<TeamDto> Teams { get; init; }
     public DbSet<SatisfactionDto> Satisfactions { get; init; }
 
+    
+    //
     public HackathonContext(DbContextOptions<HackathonContext> options)
         : base(options)
     {
-        Console.WriteLine(options.ToString());
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
