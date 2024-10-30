@@ -8,7 +8,7 @@ namespace EmployeeService.Controllers;
 [ApiController]
 public class PreferencesController : ControllerBase
 {
-    private readonly string _employeeType;
+    private readonly Role _employeeType;
     private readonly int _employeeId;
 
     private readonly string _juniorsCsvPath;
@@ -16,13 +16,16 @@ public class PreferencesController : ControllerBase
 
     public PreferencesController()
     {
-        _employeeType = Environment.GetEnvironmentVariable("EMPLOYEE_TYPE") ?? "junior";
-        _employeeId = int.TryParse(Environment.GetEnvironmentVariable("EMPLOYEE_ID") ?? "0", out _employeeId)
-            ? _employeeId
+        _employeeType = Enum.TryParse(Environment.GetEnvironmentVariable("EMPLOYEE_TYPE"), true, out Role role)
+            ? role
+            : Role.Unknown;
+
+        _employeeId = int.TryParse(Environment.GetEnvironmentVariable("EMPLOYEE_ID") ?? "0", out int id)
+            ? id
             : 0;
-        _juniorsCsvPath = "./Resources/Juniors5.csv";
-        _teamLeadsCsvPath = "./Resources/Teamleads5.csv";
-        
+        _juniorsCsvPath = "Resources/Juniors5.csv";
+        _teamLeadsCsvPath = "Resources/Teamleads5.csv";
+
         Console.WriteLine($"Employee type: {_employeeType}");
         Console.WriteLine($"Employee id: {_employeeId}");
     }
@@ -37,11 +40,10 @@ public class PreferencesController : ControllerBase
         juniors.ForEach(Console.WriteLine);
         try
         {
-            // make enum Role
-            return _employeeType.ToLower() switch
+            return _employeeType switch
             {
-                "junior" => Ok(BuildWishlist(juniors, teamLeads)),
-                "teamLead" => Ok(BuildWishlist(teamLeads, juniors)),
+                Role.Junior => Ok(BuildWishlist(juniors, teamLeads)),
+                Role.TeamLead => Ok(BuildWishlist(teamLeads, juniors)),
                 _ => BadRequest("Invalid participant type.")
             };
         }

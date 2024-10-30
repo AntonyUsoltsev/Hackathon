@@ -7,10 +7,12 @@
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - EMPLOYEE_TYPE=teamLead
-      - EMPLOYEE_ID=1
+      - EMPLOYEE_ID=3
+    volumes:
+      - ./EmployeeService/Resources:/app/Resources
     ports:
-      - "8000:8000"
-      - "8001:8001"
+      - "8000:8080"
+      - "8001:8081"
     
 #  database:
 #    image: postgres:latest
