@@ -11,8 +11,8 @@ public class PreferencesController : ControllerBase
     private readonly Role _employeeType;
     private readonly int _employeeId;
 
-    private readonly string _juniorsCsvPath;
-    private readonly string _teamLeadsCsvPath;
+    private readonly List<Employee> _juniors;
+    private readonly List<Employee> _teamLeads;
 
     public PreferencesController()
     {
@@ -23,8 +23,8 @@ public class PreferencesController : ControllerBase
         _employeeId = int.TryParse(Environment.GetEnvironmentVariable("EMPLOYEE_ID") ?? "0", out int id)
             ? id
             : 0;
-        _juniorsCsvPath = "Resources/Juniors5.csv";
-        _teamLeadsCsvPath = "Resources/Teamleads5.csv";
+        _teamLeads = CsvReader.ReadCsv("Resources/Teamleads5.csv");
+        _juniors = CsvReader.ReadCsv("Resources/Juniors5.csv");
 
         Console.WriteLine($"Employee type: {_employeeType}");
         Console.WriteLine($"Employee id: {_employeeId}");
@@ -34,16 +34,13 @@ public class PreferencesController : ControllerBase
     public IActionResult GetPreferences()
     {
         Console.WriteLine("GetPreferences method called");
-        List<Employee> teamLeads = CsvReader.ReadCsv(_teamLeadsCsvPath);
-        List<Employee> juniors = CsvReader.ReadCsv(_juniorsCsvPath);
-        teamLeads.ForEach(Console.WriteLine);
-        juniors.ForEach(Console.WriteLine);
+
         try
         {
             return _employeeType switch
             {
-                Role.Junior => Ok(BuildWishlist(juniors, teamLeads)),
-                Role.TeamLead => Ok(BuildWishlist(teamLeads, juniors)),
+                Role.Junior => Ok(BuildWishlist(_juniors, _teamLeads)),
+                Role.TeamLead => Ok(BuildWishlist(_teamLeads, _juniors)),
                 _ => BadRequest("Invalid participant type.")
             };
         }

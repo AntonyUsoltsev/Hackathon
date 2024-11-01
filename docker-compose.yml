@@ -1,4 +1,8 @@
-﻿x-employee-service:
+﻿networks:
+  hackathon_network:
+    driver: bridge
+
+x-employee-service:
   &employee-service
   build:
     context: .
@@ -6,8 +10,12 @@
   environment:
     - ASPNETCORE_ENVIRONMENT=Development
   volumes:
-    - ./EmployeeService/Resources:/app/Resources
+    - ./SharedResources:/app/Resources
   image: employee:latest
+  deploy:
+    replicas: 1
+  networks:
+    - hackathon_network
 
 services:
   teamlead-1:
@@ -15,6 +23,7 @@ services:
     environment:
       - EMPLOYEE_TYPE=teamLead
       - EMPLOYEE_ID=1
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${TEAMLEAD_1_PORT}:${TEAMLEAD_1_INTERNAL_PORT}"
 
@@ -23,6 +32,7 @@ services:
     environment:
       - EMPLOYEE_TYPE=teamLead
       - EMPLOYEE_ID=2
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${TEAMLEAD_2_PORT}:${TEAMLEAD_2_INTERNAL_PORT}"
 
@@ -31,6 +41,7 @@ services:
     environment:
       - EMPLOYEE_TYPE=teamLead
       - EMPLOYEE_ID=3
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${TEAMLEAD_3_PORT}:${TEAMLEAD_3_INTERNAL_PORT}"
 
@@ -39,6 +50,7 @@ services:
     environment:
       - EMPLOYEE_TYPE=teamLead
       - EMPLOYEE_ID=4
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${TEAMLEAD_4_PORT}:${TEAMLEAD_4_INTERNAL_PORT}"
 
@@ -47,14 +59,16 @@ services:
     environment:
       - EMPLOYEE_TYPE=teamLead
       - EMPLOYEE_ID=5
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${TEAMLEAD_5_PORT}:${TEAMLEAD_5_INTERNAL_PORT}"
-        
+
   junior-1:
     <<: *employee-service
     environment:
       - EMPLOYEE_TYPE=junior
       - EMPLOYEE_ID=1
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${JUNIOR_1_PORT}:${JUNIOR_1_INTERNAL_PORT}"
 
@@ -63,6 +77,7 @@ services:
     environment:
       - EMPLOYEE_TYPE=junior
       - EMPLOYEE_ID=2
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${JUNIOR_2_PORT}:${JUNIOR_2_INTERNAL_PORT}"
 
@@ -71,6 +86,7 @@ services:
     environment:
       - EMPLOYEE_TYPE=junior
       - EMPLOYEE_ID=3
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${JUNIOR_3_PORT}:${JUNIOR_3_INTERNAL_PORT}"
 
@@ -79,6 +95,7 @@ services:
     environment:
       - EMPLOYEE_TYPE=junior
       - EMPLOYEE_ID=4
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${JUNIOR_4_PORT}:${JUNIOR_4_INTERNAL_PORT}"
 
@@ -87,8 +104,26 @@ services:
     environment:
       - EMPLOYEE_TYPE=junior
       - EMPLOYEE_ID=5
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
-      - "${JUNIOR_5_PORT}:${JUNIOR_5_INTERNAL_PORT}"  
+      - "${JUNIOR_5_PORT}:${JUNIOR_5_INTERNAL_PORT}"
+  
+  
+  hr-manager:
+    build:
+      context: .
+      dockerfile: HrManager/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ./SharedResources:/app/Resources
+    image: hr-manager:latest
+    deploy:
+      replicas: 1
+    ports:
+      - "${HR_MANAGER_PORT}:${HR_MANAGER_INTERNAL_PORT}"
+    networks:
+      - hackathon_network
 
 #  database:
 #    image: postgres:latest

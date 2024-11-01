@@ -1,3 +1,6 @@
 /Hackathon/appsettings.json
 /EmployeeService/obj/
 /EmployeeService/bin
+/HrManager/obj/
+/HrManager/bin
+dockerr-compose.txt
