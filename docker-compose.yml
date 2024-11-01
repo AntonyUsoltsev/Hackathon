@@ -1,19 +1,95 @@
-﻿services:
+﻿x-employee-service:
+  &employee-service
+  build:
+    context: .
+    dockerfile: EmployeeService/Dockerfile
+  environment:
+    - ASPNETCORE_ENVIRONMENT=Development
+  volumes:
+    - ./EmployeeService/Resources:/app/Resources
+  image: employee:latest
+
+services:
   teamlead-1:
-    image:  teamlead-1
-    build:
-      context: .
-      dockerfile: EmployeeService/Dockerfile
+    <<: *employee-service
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - EMPLOYEE_TYPE=teamLead
+      - EMPLOYEE_ID=1
+    ports:
+      - "${TEAMLEAD_1_PORT}:${TEAMLEAD_1_INTERNAL_PORT}"
+
+  teamlead-2:
+    <<: *employee-service
+    environment:
+      - EMPLOYEE_TYPE=teamLead
+      - EMPLOYEE_ID=2
+    ports:
+      - "${TEAMLEAD_2_PORT}:${TEAMLEAD_2_INTERNAL_PORT}"
+
+  teamlead-3:
+    <<: *employee-service
+    environment:
       - EMPLOYEE_TYPE=teamLead
       - EMPLOYEE_ID=3
-    volumes:
-      - ./EmployeeService/Resources:/app/Resources
     ports:
-      - "8000:8080"
-      - "8001:8081"
-    
+      - "${TEAMLEAD_3_PORT}:${TEAMLEAD_3_INTERNAL_PORT}"
+
+  teamlead-4:
+    <<: *employee-service
+    environment:
+      - EMPLOYEE_TYPE=teamLead
+      - EMPLOYEE_ID=4
+    ports:
+      - "${TEAMLEAD_4_PORT}:${TEAMLEAD_4_INTERNAL_PORT}"
+
+  teamlead-5:
+    <<: *employee-service
+    environment:
+      - EMPLOYEE_TYPE=teamLead
+      - EMPLOYEE_ID=5
+    ports:
+      - "${TEAMLEAD_5_PORT}:${TEAMLEAD_5_INTERNAL_PORT}"
+        
+  junior-1:
+    <<: *employee-service
+    environment:
+      - EMPLOYEE_TYPE=junior
+      - EMPLOYEE_ID=1
+    ports:
+      - "${JUNIOR_1_PORT}:${JUNIOR_1_INTERNAL_PORT}"
+
+  junior-2:
+    <<: *employee-service
+    environment:
+      - EMPLOYEE_TYPE=junior
+      - EMPLOYEE_ID=2
+    ports:
+      - "${JUNIOR_2_PORT}:${JUNIOR_2_INTERNAL_PORT}"
+
+  junior-3:
+    <<: *employee-service
+    environment:
+      - EMPLOYEE_TYPE=junior
+      - EMPLOYEE_ID=3
+    ports:
+      - "${JUNIOR_3_PORT}:${JUNIOR_3_INTERNAL_PORT}"
+
+  junior-4:
+    <<: *employee-service
+    environment:
+      - EMPLOYEE_TYPE=junior
+      - EMPLOYEE_ID=4
+    ports:
+      - "${JUNIOR_4_PORT}:${JUNIOR_4_INTERNAL_PORT}"
+
+  junior-5:
+    <<: *employee-service
+    environment:
+      - EMPLOYEE_TYPE=junior
+      - EMPLOYEE_ID=5
+    ports:
+      - "${JUNIOR_5_PORT}:${JUNIOR_5_INTERNAL_PORT}"  
+
 #  database:
 #    image: postgres:latest
 #    container_name: hackathon_database
