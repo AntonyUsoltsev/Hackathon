@@ -73,50 +73,6 @@ services:
     depends_on:
       - hr-director
 
-  teamlead-1:
-    <<: *employee-service
-    environment:
-      - EMPLOYEE_TYPE=teamLead
-      - EMPLOYEE_ID=1
-      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
-    ports:
-      - "${TEAMLEAD_1_PORT}:${TEAMLEAD_1_INTERNAL_PORT}"
-
-  teamlead-2:
-    <<: *employee-service
-    environment:
-      - EMPLOYEE_TYPE=teamLead
-      - EMPLOYEE_ID=2
-      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
-    ports:
-      - "${TEAMLEAD_2_PORT}:${TEAMLEAD_2_INTERNAL_PORT}"
-
-  teamlead-3:
-    <<: *employee-service
-    environment:
-      - EMPLOYEE_TYPE=teamLead
-      - EMPLOYEE_ID=3
-      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
-    ports:
-      - "${TEAMLEAD_3_PORT}:${TEAMLEAD_3_INTERNAL_PORT}"
-
-  teamlead-4:
-    <<: *employee-service
-    environment:
-      - EMPLOYEE_TYPE=teamLead
-      - EMPLOYEE_ID=4
-      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
-    ports:
-      - "${TEAMLEAD_4_PORT}:${TEAMLEAD_4_INTERNAL_PORT}"
-
-  teamlead-5:
-    <<: *employee-service
-    environment:
-      - EMPLOYEE_TYPE=teamLead
-      - EMPLOYEE_ID=5
-      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
-    ports:
-      - "${TEAMLEAD_5_PORT}:${TEAMLEAD_5_INTERNAL_PORT}"
 
   junior-1:
     <<: *employee-service
@@ -162,4 +118,50 @@ services:
       - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${JUNIOR_5_PORT}:${JUNIOR_5_INTERNAL_PORT}"
+  
+  
+  teamlead-1:
+    <<: *employee-service
+    environment:
+      - EMPLOYEE_TYPE=teamLead
+      - EMPLOYEE_ID=6
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
+    ports:
+      - "${TEAMLEAD_1_PORT}:${TEAMLEAD_1_INTERNAL_PORT}"
+
+  teamlead-2:
+    <<: *employee-service
+    environment:
+      - EMPLOYEE_TYPE=teamLead
+      - EMPLOYEE_ID=7
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
+    ports:
+      - "${TEAMLEAD_2_PORT}:${TEAMLEAD_2_INTERNAL_PORT}"
+
+  teamlead-3:
+    <<: *employee-service
+    environment:
+      - EMPLOYEE_TYPE=teamLead
+      - EMPLOYEE_ID=8
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
+    ports:
+      - "${TEAMLEAD_3_PORT}:${TEAMLEAD_3_INTERNAL_PORT}"
+
+  teamlead-4:
+    <<: *employee-service
+    environment:
+      - EMPLOYEE_TYPE=teamLead
+      - EMPLOYEE_ID=9
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
+    ports:
+      - "${TEAMLEAD_4_PORT}:${TEAMLEAD_4_INTERNAL_PORT}"
+
+  teamlead-5:
+    <<: *employee-service
+    environment:
+      - EMPLOYEE_TYPE=teamLead
+      - EMPLOYEE_ID=10
+      - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
+    ports:
+      - "${TEAMLEAD_5_PORT}:${TEAMLEAD_5_INTERNAL_PORT}"
   
