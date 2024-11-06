@@ -4,3 +4,5 @@
 /HrManager/obj/
 /HrManager/bin
 dockerr-compose.txt
+/HrDirector/appsettings.json
+/HrDirector/appsettings.Development.json

@@ -1,3 +1,3 @@
-namespace HrManager.Model;
+namespace HrDirector.Model;
 
 public record Employee(int Id, string Name);

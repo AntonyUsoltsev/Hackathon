@@ -10,14 +10,31 @@ x-employee-service:
   environment:
     - ASPNETCORE_ENVIRONMENT=Development
   volumes:
-    - ./SharedResources:/app/Resources
+    - ./EmployeeService/Resources:/app/Resources
   image: employee:latest
   deploy:
     replicas: 1
   networks:
     - hackathon_network
 
+
 services:
+  database:
+    image: postgres:latest
+    container_name: hackathon_database
+    environment:
+      - POSTGRES_DB="hackathon_database"
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./.containers/hackathon-db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      retries: 5
+  
   teamlead-1:
     <<: *employee-service
     environment:
@@ -115,8 +132,9 @@ services:
       dockerfile: HrManager/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - HR_DIRECTOR_URL=http://hr-director:${HR_DIRECTOR_INTERNAL_PORT}/api/harmony
     volumes:
-      - ./SharedResources:/app/Resources
+      - ./HrManager/Resources:/app/Resources
     image: hr-manager:latest
     deploy:
       replicas: 1
@@ -125,14 +143,19 @@ services:
     networks:
       - hackathon_network
 
-#  database:
-#    image: postgres:latest
-#    container_name: hackathon_database
-#    environment:
-#      - POSTGRES_DB="hackathon_database"
-#      - POSTGRES_USER=postgres
-#      - POSTGRES_PASSWORD=postgres
-#    volumes:
-#      - ./.containers/hackathon-db:/var/lib/postgresql/data
-#    ports:
-#      - "5432:5432"
+  hr-director:
+    build:
+      context: .
+      dockerfile: HrDirector/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ./HrDirector/Resources/DataBase:/docker-entrypoint-initdb.d
+    image: hr-director:latest
+    ports:
+      - "${HR_DIRECTOR_PORT}:${HR_DIRECTOR_INTERNAL_PORT}"
+    networks:
+      - hackathon_network
+    depends_on:
+      db:
+        condition: service_healthy

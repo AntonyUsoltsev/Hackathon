@@ -1,4 +1,4 @@
-using Hackathon.Model;
+using HrManager.Model;
 
 namespace HrManager.Service;
 

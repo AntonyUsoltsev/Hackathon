@@ -1,9 +1,9 @@
-using Hackathon.Model;
+using HrManager.Model;
 using HrManager.Util;
 
 namespace HrManager.Service;
 
-public class TeamBuilder(ITeamBuildingStrategy strategy) :ITeamBuilder
+public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clientFactory) :ITeamBuilder
 {
     private readonly IEnumerable<Employee> _teamLeads =
         (IEnumerable<Employee>?)CsvReader.ReadCsv("Resources/Teamleads5.csv") ??
@@ -13,10 +13,12 @@ public class TeamBuilder(ITeamBuildingStrategy strategy) :ITeamBuilder
         (IEnumerable<Employee>?)CsvReader.ReadCsv("Resources/Juniors5.csv") ??
         throw new InvalidOperationException();
 
+    private readonly string _hrDirectorUrl = Environment.GetEnvironmentVariable("HR_DIRECTOR_URL") ??
+                                             throw new InvalidOperationException("Invalid hr director url.");
+
     private readonly List<Wishlist> _teamLeadsWishlists = [];
     private readonly List<Wishlist> _juniorsWishlists = [];
-    private IEnumerable<Team> FormedTeams { get; set; } = new List<Team>();
-    
+
     public void SaveTeamLeadWishlist(Wishlist wishlist)
     {
         _teamLeadsWishlists.Add(wishlist);
@@ -34,12 +36,19 @@ public class TeamBuilder(ITeamBuildingStrategy strategy) :ITeamBuilder
         if (_teamLeadsWishlists.Count == _teamLeads.Count() &&
             _juniorsWishlists.Count == _juniors.Count())
         {
-            FormedTeams = strategy.BuildTeams(_teamLeads, _juniors, _teamLeadsWishlists, _juniorsWishlists);
-            // send teams to director
+            IEnumerable<Team> formedTeams = strategy.BuildTeams(_teamLeads, _juniors, _teamLeadsWishlists, _juniorsWishlists);
+            SendTeamsToDirector(formedTeams);
         }
     }
 
-    private void SendTeamsToDirector()
+    private async void SendTeamsToDirector(IEnumerable<Team> formedTeams)
     {
+        using var client = clientFactory.CreateClient();
+        var allDataDto = new AllDataDto(_teamLeadsWishlists, _juniorsWishlists, formedTeams);
+        var response = await client.PostAsJsonAsync(_hrDirectorUrl, allDataDto);
+
+        Console.WriteLine(response.IsSuccessStatusCode
+            ? "Wishlist and teams sent successfully to HR Director."
+            : $"Failed to send wishlist. Status Code: {response.StatusCode}");
     }
 }

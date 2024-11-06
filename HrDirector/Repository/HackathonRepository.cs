@@ -1,0 +1,53 @@
+using HrDirector.DataBase;
+using HrDirector.DataBase.Dto;
+
+namespace HrDirector.Repository;
+
+public class HackathonRepository(HackathonContext context)
+{
+    public IEnumerable<HackathonDto> GetAllHackathons()
+    {
+        return context.Hackathons.ToList();
+    }
+
+    public HackathonDto GetHackathonById(int id)
+    {
+        return context.Hackathons.SingleOrDefault(h => h.Id == id);
+    }
+
+    public HackathonDto CreateEmptyHackathon()
+    {
+        var hackathonDto = new HackathonDto(0);
+        context.Hackathons.Add(hackathonDto);
+        context.SaveChanges();
+        return hackathonDto;
+    }
+
+    public HackathonDto UpdateHackathonResult(int id, double resultHarmony)
+    {
+        var hackathonDto = GetHackathonById(id);
+        if (hackathonDto == null)
+        {
+            throw new Exception($"Hackathon with ID {id} not found.");
+        }
+
+        hackathonDto.ResultHarmony = resultHarmony;
+        context.SaveChanges();
+        return hackathonDto;
+    }
+
+    public HackathonDto SaveNewHackathon(double resultHarmony)
+    {
+        var hackathonDto = new HackathonDto(resultHarmony);
+        context.Hackathons.Add(hackathonDto);
+        context.SaveChanges();
+        return hackathonDto;
+    }
+
+    public double AverageResultHarmony()
+    {
+        double averageHarmony = context.Hackathons.Average(h => h.ResultHarmony);
+        Console.WriteLine($"Average Result Harmony: {averageHarmony}");
+        return averageHarmony;
+    }
+}

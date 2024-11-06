@@ -1,4 +1,4 @@
-using Hackathon.Model;
+using HrManager.Model;
 using HrManager.Service;
 using Microsoft.AspNetCore.Mvc;
 

@@ -8,8 +8,11 @@ public class BuildWishlistService : IHostedService
     private readonly Role _employeeType;
     private readonly int _employeeId;
 
-    private readonly List<Employee> _juniors;
-    private readonly List<Employee> _teamLeads;
+    private readonly List<Employee> _teamLeads = CsvReader.ReadCsv("Resources/Teamleads5.csv") ??
+                                                        throw new InvalidOperationException();
+
+    private readonly List<Employee> _juniors = CsvReader.ReadCsv("Resources/Juniors5.csv") ??
+                                               throw new InvalidOperationException();
 
     private readonly IHttpClientFactory _clientFactory;
     private readonly string _hrManagerUrl;
@@ -25,13 +28,9 @@ public class BuildWishlistService : IHostedService
             ? id
             : throw new InvalidOperationException("Invalid participant id.");
 
-        _teamLeads = CsvReader.ReadCsv("Resources/Teamleads5.csv");
-        _juniors = CsvReader.ReadCsv("Resources/Juniors5.csv");
-
         string hrManagerTemplateUrl = Environment.GetEnvironmentVariable("HR_MANAGER_URL") ??
                                       throw new InvalidOperationException("Invalid hr manager url.");
         _hrManagerUrl = hrManagerTemplateUrl.Replace("{EMPLOYEE_TYPE}", _employeeType.ToString().ToLower());
-
 
         Console.WriteLine($"Employee type: {_employeeType}");
         Console.WriteLine($"Employee id: {_employeeId}");
