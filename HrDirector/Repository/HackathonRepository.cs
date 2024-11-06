@@ -5,25 +5,25 @@ namespace HrDirector.Repository;
 
 public class HackathonRepository(HackathonContext context)
 {
-    public IEnumerable<HackathonDto> GetAllHackathons()
+    public IEnumerable<HackathonEntity> GetAllHackathons()
     {
         return context.Hackathons.ToList();
     }
 
-    public HackathonDto GetHackathonById(int id)
+    public HackathonEntity GetHackathonById(int id)
     {
         return context.Hackathons.SingleOrDefault(h => h.Id == id);
     }
 
-    public HackathonDto CreateEmptyHackathon()
+    public HackathonEntity CreateEmptyHackathon()
     {
-        var hackathonDto = new HackathonDto(0);
+        var hackathonDto = new HackathonEntity(0);
         context.Hackathons.Add(hackathonDto);
         context.SaveChanges();
         return hackathonDto;
     }
 
-    public HackathonDto UpdateHackathonResult(int id, double resultHarmony)
+    public HackathonEntity UpdateHackathonResult(int id, double resultHarmony)
     {
         var hackathonDto = GetHackathonById(id);
         if (hackathonDto == null)
@@ -36,9 +36,9 @@ public class HackathonRepository(HackathonContext context)
         return hackathonDto;
     }
 
-    public HackathonDto SaveNewHackathon(double resultHarmony)
+    public HackathonEntity SaveNewHackathon(double resultHarmony)
     {
-        var hackathonDto = new HackathonDto(resultHarmony);
+        var hackathonDto = new HackathonEntity(resultHarmony);
         context.Hackathons.Add(hackathonDto);
         context.SaveChanges();
         return hackathonDto;

@@ -5,17 +5,17 @@ namespace HrDirector.DtoMapper;
 
 public class Mapper
 {
-    public static Employee MapEmployee(EmployeeDto employeeDto)
+    public static Employee MapEmployee(EmployeeEntity employeeDto)
     {
         return new Employee(employeeDto.Id, employeeDto.Name);
     }
 
-    public static Team MapTeam(EmployeeDto teamLeadDto, EmployeeDto juniorDto)
+    public static Team MapTeam(EmployeeEntity teamLeadDto, EmployeeEntity juniorDto)
     {
         return new Team(MapEmployee(teamLeadDto), MapEmployee(juniorDto));
     }
 
-    public static Satisfaction MapSatisfaction(EmployeeDto employeeDto, int satisfactionRank)
+    public static Satisfaction MapSatisfaction(EmployeeEntity employeeDto, int satisfactionRank)
     {
         return new Satisfaction(MapEmployee(employeeDto), satisfactionRank);
     }

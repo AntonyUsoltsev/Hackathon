@@ -10,7 +10,7 @@ public interface IHrDirectorService
         IEnumerable<Wishlist> juniorsWishlists,
         int hackathonId);
 
-    HackathonDto CreateEmptyHackathon();
+    HackathonEntity CreateEmptyHackathon();
     void SaveTeams(IEnumerable<Team> formedTeams , int hackathonId);
 
     void SaveWishlists(List<Wishlist> teamLeadsWishlists, List<Wishlist> juniorsWishlists, int hackathonId);

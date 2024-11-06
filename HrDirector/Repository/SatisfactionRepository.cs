@@ -9,7 +9,7 @@ public class SatisfactionRepository(HackathonContext context)
 {
     public IEnumerable<Satisfaction> GetSatisfactionsByHackathonId(int hackathonId)
     {
-        List<SatisfactionDto> satisfactionsDtos = context.Satisfactions
+        List<SatisfactionEntity> satisfactionsDtos = context.Satisfactions
             .Where(s => s.HackathonId == hackathonId)
             .ToList();
 
@@ -31,7 +31,7 @@ public class SatisfactionRepository(HackathonContext context)
 
     public void SaveSatisfaction(int hackathonId, int employeeId, int satisfactionRank)
     {
-        var satisfactionDto = new SatisfactionDto(hackathonId, employeeId, satisfactionRank);
+        var satisfactionDto = new SatisfactionEntity(hackathonId, employeeId, satisfactionRank);
         context.Satisfactions.Add(satisfactionDto);
         context.SaveChanges();
     }

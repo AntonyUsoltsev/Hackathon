@@ -36,6 +36,7 @@ public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clie
         if (_teamLeadsWishlists.Count == _teamLeads.Count() &&
             _juniorsWishlists.Count == _juniors.Count())
         {
+            Console.WriteLine("Start building teams");
             IEnumerable<Team> formedTeams = strategy.BuildTeams(_teamLeads, _juniors, _teamLeadsWishlists, _juniorsWishlists);
             SendTeamsToDirector(formedTeams);
         }
@@ -45,6 +46,9 @@ public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clie
     {
         using var client = clientFactory.CreateClient();
         var allDataDto = new AllDataDto(_teamLeadsWishlists, _juniorsWishlists, formedTeams);
+        
+        Console.WriteLine($"Send data to HR director:{JsonContent.Create(allDataDto).Value}");
+        
         var response = await client.PostAsJsonAsync(_hrDirectorUrl, allDataDto);
 
         Console.WriteLine(response.IsSuccessStatusCode

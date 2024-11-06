@@ -71,6 +71,7 @@ public class BuildWishlistService : IHostedService
 
     private async Task SendWishlistToHrManager(Wishlist wishlist, CancellationToken cancellationToken)
     {
+        Console.WriteLine($"Send wishlist to HR manager:{JsonContent.Create(wishlist).Value}");
         using var client = _clientFactory.CreateClient();
 
         var response = await client.PostAsJsonAsync(_hrManagerUrl, wishlist, cancellationToken);

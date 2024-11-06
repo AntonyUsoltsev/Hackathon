@@ -16,25 +16,63 @@ x-employee-service:
     replicas: 1
   networks:
     - hackathon_network
-
+  depends_on:
+    - hr-manager
 
 services:
-  database:
+  hackathon_database:
     image: postgres:latest
-    container_name: hackathon_database
     environment:
-      - POSTGRES_DB="hackathon_database"
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ./.containers/hackathon-db:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 10s
+      interval: 5s
       retries: 5
+    networks:
+      - hackathon_network
   
+  hr-director:
+    build:
+      context: .
+      dockerfile: HrDirector/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    image: hr-director:latest
+    deploy:
+      replicas: 1
+    ports:
+      - "${HR_DIRECTOR_PORT}:${HR_DIRECTOR_INTERNAL_PORT}"
+    networks:
+      - hackathon_network
+    depends_on:
+      hackathon_database:
+        condition: service_healthy
+  
+  hr-manager:
+    build:
+      context: .
+      dockerfile: HrManager/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - HR_DIRECTOR_URL=http://hr-director:${HR_DIRECTOR_INTERNAL_PORT}/api/harmony
+    volumes:
+      - ./HrManager/Resources:/app/Resources
+    image: hr-manager:latest
+    deploy:
+      replicas: 1
+    ports:
+      - "${HR_MANAGER_PORT}:${HR_MANAGER_INTERNAL_PORT}"
+    networks:
+      - hackathon_network
+    depends_on:
+      - hr-director
+
   teamlead-1:
     <<: *employee-service
     environment:
@@ -125,37 +163,3 @@ services:
     ports:
       - "${JUNIOR_5_PORT}:${JUNIOR_5_INTERNAL_PORT}"
   
-  
-  hr-manager:
-    build:
-      context: .
-      dockerfile: HrManager/Dockerfile
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - HR_DIRECTOR_URL=http://hr-director:${HR_DIRECTOR_INTERNAL_PORT}/api/harmony
-    volumes:
-      - ./HrManager/Resources:/app/Resources
-    image: hr-manager:latest
-    deploy:
-      replicas: 1
-    ports:
-      - "${HR_MANAGER_PORT}:${HR_MANAGER_INTERNAL_PORT}"
-    networks:
-      - hackathon_network
-
-  hr-director:
-    build:
-      context: .
-      dockerfile: HrDirector/Dockerfile
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-    volumes:
-      - ./HrDirector/Resources/DataBase:/docker-entrypoint-initdb.d
-    image: hr-director:latest
-    ports:
-      - "${HR_DIRECTOR_PORT}:${HR_DIRECTOR_INTERNAL_PORT}"
-    networks:
-      - hackathon_network
-    depends_on:
-      db:
-        condition: service_healthy

@@ -8,7 +8,7 @@ public class WishlistRepository(HackathonContext context)
 {
     public IEnumerable<Wishlist> GetWishlistsByHackathonId(int hackathonId)
     {
-        List<WishlistDto> wishlistDtos = context.Wishlists
+        List<WishlistEntity> wishlistDtos = context.Wishlists
             .Where(w => w.HackathonId == hackathonId)
             .ToList();
 
@@ -24,7 +24,7 @@ public class WishlistRepository(HackathonContext context)
     {
         for (int i = 0; i < wishlist.DesiredEmployees.Length; i++)
         {
-            var wishlistDto = new WishlistDto(wishlist.EmployeeId, wishlist.DesiredEmployees[i],
+            var wishlistDto = new WishlistEntity(wishlist.EmployeeId, wishlist.DesiredEmployees[i],
                 wishlist.DesiredEmployees.Length - i, hackathonId);
             context.Wishlists.Add(wishlistDto);
             context.SaveChanges();

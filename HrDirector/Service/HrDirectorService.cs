@@ -33,7 +33,7 @@ public class HrDirectorService(
         return HarmonicMeanCount.CountHarmonicMean(allSatisfactions);
     }
 
-    public HackathonDto CreateEmptyHackathon()
+    public HackathonEntity CreateEmptyHackathon()
     {
         return hackathonRepository.CreateEmptyHackathon();
     }

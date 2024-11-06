@@ -20,4 +20,7 @@ RUN dotnet publish "HrDirector.csproj" -c $BUILD_CONFIGURATION -o /app/publish /
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["sh", "-c", "dotnet HrDirector.dll && dotnet ef database update"]
+
+COPY ["HrDirector/entrypoint.sh", "HrDirector/entrypoint.sh"]
+
+ENTRYPOINT ["HrDirector/entrypoint.sh"]

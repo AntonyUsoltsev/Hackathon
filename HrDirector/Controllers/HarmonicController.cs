@@ -14,6 +14,7 @@ public class HarmonicController(IHrDirectorService iDirectorService) : Controlle
         Console.WriteLine("CalculateHarmony method called");
 
         var hackathonDto = iDirectorService.CreateEmptyHackathon();
+        
         iDirectorService.SaveTeams(allDataDto.formedTeams, hackathonDto.Id);
         iDirectorService.SaveWishlists(allDataDto.teamLeadsWishlists, allDataDto.juniorsWishlists, hackathonDto.Id);
 

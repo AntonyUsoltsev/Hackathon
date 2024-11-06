@@ -9,7 +9,7 @@ public class TeamRepository(HackathonContext context)
 {
     public IEnumerable<Team> GetTeamByHackathonId(int hackathonId)
     {
-        List<TeamDto> teamDtos = context.Teams
+        List<TeamEntity> teamDtos = context.Teams
             .Where(t => t.HackathonId == hackathonId)
             .ToList();
 
@@ -30,9 +30,9 @@ public class TeamRepository(HackathonContext context)
         return teams;
     }
 
-    public TeamDto SaveTeam(Team team, int hackathonId)
+    public TeamEntity SaveTeam(Team team, int hackathonId)
     {
-        var teamDto = new TeamDto(team.TeamLead.Id, team.Junior.Id, hackathonId);
+        var teamDto = new TeamEntity(team.TeamLead.Id, team.Junior.Id, hackathonId);
         context.Teams.Add(teamDto);
         context.SaveChanges();
         return teamDto;
