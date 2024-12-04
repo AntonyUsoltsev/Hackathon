@@ -1,4 +1,4 @@
-using HrDirector.Model;
+using Contract;
 using HrDirector.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,23 +6,21 @@ namespace HrDirector.Controllers;
 
 [Route("api/harmony")]
 [ApiController]
-public class HarmonicController(IHrDirectorService iDirectorService) : ControllerBase
+public class HarmonicController(HrDirectorService hrDirectorService) : ControllerBase
 {
     [HttpPost]
-    public IActionResult CalculateHarmony([FromBody] AllDataDto allDataDto)
+    public IActionResult CalculateHarmony([FromBody] TeamsMessage teamsMessage)
     {
         Console.WriteLine("CalculateHarmony method called");
-
-        var hackathonDto = iDirectorService.CreateEmptyHackathon();
         
-        iDirectorService.SaveTeams(allDataDto.formedTeams, hackathonDto.Id);
-        iDirectorService.SaveWishlists(allDataDto.teamLeadsWishlists, allDataDto.juniorsWishlists, hackathonDto.Id);
+        // hrDirectorService.SaveTeams(teamsMessage.formedTeams, teamsMessage.hackathonId);
+        // hrDirectorService.SaveWishlists(teamsMessage.teamLeadsWishlists, teamsMessage.juniorsWishlists, teamsMessage.hackathonId);
 
-        double satisfaction = iDirectorService.CalculateHarmony(allDataDto.formedTeams, allDataDto.teamLeadsWishlists,
-            allDataDto.juniorsWishlists, hackathonDto.Id);
-        iDirectorService.UpdateHackathonResult(satisfaction, hackathonDto.Id);
+        double satisfaction = hrDirectorService.CalculateHarmony(teamsMessage.formedTeams, teamsMessage.teamLeadsWishlists,
+            teamsMessage.juniorsWishlists, teamsMessage.hackathonId);
+        // hrDirectorService.UpdateHackathonResult(satisfaction, teamsMessage.hackathonId);
 
-        Console.WriteLine($"Satisafction: {satisfaction}");
+        Console.WriteLine($"Satisfaction: {satisfaction}");
         return Ok();
     }
 }

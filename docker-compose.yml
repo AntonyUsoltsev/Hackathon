@@ -17,7 +17,8 @@ x-employee-service:
   networks:
     - hackathon_network
   depends_on:
-    - hr-manager
+    rabbitmq:
+      condition: service_healthy
 
 services:
   hackathon_database:
@@ -36,7 +37,26 @@ services:
       retries: 5
     networks:
       - hackathon_network
-  
+
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    hostname: rabbitmq
+    restart: always
+    environment:
+        RABBITMQ_DEFAULT_USER: rmuser
+        RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+        RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit disk_free_limit 2147483648
+    volumes:
+      - ./.containers/rabbitmq/data:/var/lib/rabbitmq
+      - ./.containers/rabbitmq/logs:/var/log/rabbitmq
+    networks:
+      - hackathon_network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   hr-director:
     build:
       context: .
@@ -51,6 +71,8 @@ services:
     networks:
       - hackathon_network
     depends_on:
+      rabbitmq:
+        condition: service_healthy
       hackathon_database:
         condition: service_healthy
   
@@ -71,8 +93,8 @@ services:
     networks:
       - hackathon_network
     depends_on:
-      - hr-director
-
+      rabbitmq:
+        condition: service_healthy
 
   junior-1:
     <<: *employee-service
@@ -164,4 +186,3 @@ services:
       - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${TEAMLEAD_5_PORT}:${TEAMLEAD_5_INTERNAL_PORT}"
-  

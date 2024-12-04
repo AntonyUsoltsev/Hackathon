@@ -1,3 +1,4 @@
+using Contract;
 using HrDirector.DataBase.Dto;
 using HrDirector.Model;
 

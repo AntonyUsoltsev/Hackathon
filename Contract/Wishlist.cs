@@ -1,3 +1,3 @@
-namespace HrManager.Model;
+namespace Contract;
 
 public record Wishlist(int EmployeeId, int[] DesiredEmployees);

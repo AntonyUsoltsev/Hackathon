@@ -1,25 +1,25 @@
-using EmployeeService.Model;
+using Contract;
 using EmployeeService.Util;
+using MassTransit;
 
 namespace EmployeeService.Service;
 
-public class BuildWishlistService : IHostedService
+public class BuildWishlistService
 {
     private readonly Role _employeeType;
     private readonly int _employeeId;
 
     private readonly List<Employee> _teamLeads = CsvReader.ReadCsv("Resources/Teamleads5.csv") ??
-                                                        throw new InvalidOperationException();
+                                                 throw new InvalidOperationException();
 
     private readonly List<Employee> _juniors = CsvReader.ReadCsv("Resources/Juniors5.csv") ??
                                                throw new InvalidOperationException();
 
-    private readonly IHttpClientFactory _clientFactory;
-    private readonly string _hrManagerUrl;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public BuildWishlistService(IHttpClientFactory clientFactory)
+    public BuildWishlistService(IPublishEndpoint publishEndpoint)
     {
-        _clientFactory = clientFactory;
+        _publishEndpoint = publishEndpoint;
         _employeeType = Enum.TryParse(Environment.GetEnvironmentVariable("EMPLOYEE_TYPE"), true, out Role role)
             ? role
             : throw new InvalidOperationException("Invalid participant type.");
@@ -30,13 +30,12 @@ public class BuildWishlistService : IHostedService
 
         string hrManagerTemplateUrl = Environment.GetEnvironmentVariable("HR_MANAGER_URL") ??
                                       throw new InvalidOperationException("Invalid hr manager url.");
-        _hrManagerUrl = hrManagerTemplateUrl.Replace("{EMPLOYEE_TYPE}", _employeeType.ToString().ToLower());
 
         Console.WriteLine($"Employee type: {_employeeType}");
         Console.WriteLine($"Employee id: {_employeeId}");
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public async void StartHackathon(int hackathonId)
     {
         try
         {
@@ -47,7 +46,7 @@ public class BuildWishlistService : IHostedService
                 _ => throw new InvalidOperationException("Invalid participant type.")
             };
 
-            await SendWishlistToHrManager(buildWishlist, cancellationToken);
+            await SendWishlistToHrManager(buildWishlist, hackathonId);
         }
         catch (Exception ex)
         {
@@ -55,11 +54,6 @@ public class BuildWishlistService : IHostedService
         }
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        Console.WriteLine("BuildWishlistService is stopping.");
-        return Task.CompletedTask;
-    }
 
     private Wishlist BuildWishlist(List<Employee> selectors, List<Employee> chooseables)
     {
@@ -69,15 +63,19 @@ public class BuildWishlistService : IHostedService
         return WishListBuilder.BuildWishlist(currentEmployee, chooseables);
     }
 
-    private async Task SendWishlistToHrManager(Wishlist wishlist, CancellationToken cancellationToken)
+    private async Task SendWishlistToHrManager(Wishlist wishlist, int hackathonId)
     {
-        Console.WriteLine($"Send wishlist to HR manager:{JsonContent.Create(wishlist).Value}");
-        using var client = _clientFactory.CreateClient();
+        WishlistMessage dto = new WishlistMessage(wishlist, _employeeType, hackathonId);
+        Console.WriteLine($"Sending wishlist to HR manager by RabbitMQ: {JsonContent.Create(dto).Value}");
 
-        var response = await client.PostAsJsonAsync(_hrManagerUrl, wishlist, cancellationToken);
-
-        Console.WriteLine(response.IsSuccessStatusCode
-            ? "Wishlist sent successfully to HR Manager."
-            : $"Failed to send wishlist. Status Code: {response.StatusCode}");
+        try
+        {
+            await _publishEndpoint.Publish(dto, CancellationToken.None);
+            Console.WriteLine("Wishlist successfully sent to HR manager by RabbitMQ.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to send wishlist to HR manager by RabbitMQ: {ex.Message}");
+        }
     }
 }

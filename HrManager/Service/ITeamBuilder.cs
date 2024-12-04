@@ -1,9 +1,9 @@
-using HrManager.Model;
+using Contract;
 
 namespace HrManager.Service;
 
 public interface ITeamBuilder
 {
-    public void SaveJuniorWishlist(Wishlist wishlist);
-    public void SaveTeamLeadWishlist(Wishlist wishlist);
+    public void SaveJuniorWishlist(WishlistMessage dto);
+    public void SaveTeamLeadWishlist(WishlistMessage dto);
 }

@@ -1,3 +1,4 @@
+using Contract;
 using HrDirector.DataBase.Dto;
 using HrDirector.Model;
 using HrDirector.Repository;
@@ -8,7 +9,7 @@ public class HrDirectorService(
     SatisfactionRepository satisfactionRepository,
     HackathonRepository hackathonRepository,
     TeamRepository teamRepository,
-    WishlistRepository wishlistRepository) : IHrDirectorService
+    WishlistRepository wishlistRepository)
 {
     public double CalculateHarmony(IEnumerable<Team> teams,
         IEnumerable<Wishlist> teamLeadsWishlists,

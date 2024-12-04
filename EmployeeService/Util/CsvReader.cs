@@ -1,5 +1,4 @@
-
-using EmployeeService.Model;
+using Contract;
 
 namespace EmployeeService.Util;
 

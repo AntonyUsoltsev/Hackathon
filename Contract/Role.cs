@@ -1,4 +1,4 @@
-namespace EmployeeService.Model;
+namespace Contract;
 
 public enum Role
 {

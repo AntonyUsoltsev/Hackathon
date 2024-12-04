@@ -1,4 +1,4 @@
-using HrManager.Model;
+using Contract;
 
 namespace HrManager.Util;
 

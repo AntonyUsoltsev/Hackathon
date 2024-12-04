@@ -1,3 +1,4 @@
+using Contract;
 using EmployeeService.Model;
 
 namespace EmployeeService.Util;
