@@ -7,7 +7,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<BuildWishlistService>();
+builder.Services.AddSingleton<BuildWishlistService>();
 
 builder.Services.AddMassTransit(busConfigurator =>
 {

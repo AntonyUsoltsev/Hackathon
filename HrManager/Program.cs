@@ -10,6 +10,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<ITeamBuildingStrategy, MarriageStrategy>();
 builder.Services.AddSingleton<ITeamBuilder, TeamBuilder>();
+builder.Services.AddSingleton<DataStore>();
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddMassTransit(busConfigurator =>

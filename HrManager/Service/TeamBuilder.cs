@@ -4,7 +4,8 @@ using HrManager.Util;
 
 namespace HrManager.Service;
 
-public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clientFactory) :ITeamBuilder
+public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clientFactory, DataStore dataStore)
+    : ITeamBuilder
 {
     private readonly IEnumerable<Employee> _teamLeads =
         (IEnumerable<Employee>?)CsvReader.ReadCsv("Resources/Teamleads5.csv") ??
@@ -17,8 +18,6 @@ public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clie
     private readonly string _hrDirectorUrl = Environment.GetEnvironmentVariable("HR_DIRECTOR_URL") ??
                                              throw new InvalidOperationException("Invalid hr director url.");
 
-    private readonly List<Wishlist> _teamLeadsWishlists = [];
-    private readonly List<Wishlist> _juniorsWishlists = [];
     private readonly object _lock = new object();
 
 
@@ -26,7 +25,7 @@ public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clie
     {
         lock (_lock)
         {
-            _teamLeadsWishlists.Add(dto.Wishlist);
+            dataStore.AddTeamLeadWishlist(dto.hackathonId, dto.Wishlist);
             TryFormTeams(dto.hackathonId);
         }
     }
@@ -35,19 +34,23 @@ public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clie
     {
         lock (_lock)
         {
-            _juniorsWishlists.Add(dto.Wishlist);
+            dataStore.AddJuniorWishlist(dto.hackathonId, dto.Wishlist);
             TryFormTeams(dto.hackathonId);
         }
     }
 
     private void TryFormTeams(int hackathonId)
     {
-        Console.WriteLine($"Current team leads: {_teamLeadsWishlists.Count}, current juniors: {_juniorsWishlists.Count}, allTeamLeads: {_teamLeads.Count()}, allJuniors: {_juniors.Count()}");
-        if (_teamLeadsWishlists.Count == _teamLeads.Count() &&
-            _juniorsWishlists.Count == _juniors.Count())
+        List<Wishlist> teamLeadsWishlists = dataStore.GetTeamLeadWishlists(hackathonId);
+        List<Wishlist> juniorsWishlists = dataStore.GetJuniorWishlists(hackathonId);
+        Console.WriteLine(
+            $"Current team leads: {teamLeadsWishlists.Count}, current juniors: {juniorsWishlists.Count}, allTeamLeads: {_teamLeads.Count()}, allJuniors: {_juniors.Count()}");
+        if (teamLeadsWishlists.Count == _teamLeads.Count() &&
+            juniorsWishlists.Count == _juniors.Count())
         {
             Console.WriteLine("Start building teams");
-            IEnumerable<Team> formedTeams = strategy.BuildTeams(_teamLeads, _juniors, _teamLeadsWishlists, _juniorsWishlists);
+            IEnumerable<Team> formedTeams =
+                strategy.BuildTeams(_teamLeads, _juniors, teamLeadsWishlists, juniorsWishlists);
             SendTeamsToDirector(formedTeams, hackathonId);
         }
     }
@@ -56,9 +59,9 @@ public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clie
     {
         using var client = clientFactory.CreateClient();
         var allDataDto = new TeamsMessage(formedTeams, hackathonId);
-        
+
         Console.WriteLine($"Send data to HR director:{JsonContent.Create(allDataDto).Value}");
-        
+
         var response = await client.PostAsJsonAsync(_hrDirectorUrl, allDataDto);
 
         Console.WriteLine(response.IsSuccessStatusCode

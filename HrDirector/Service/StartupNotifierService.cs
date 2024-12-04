@@ -3,7 +3,7 @@ using MassTransit;
 
 namespace HrDirector.Service;
 
-public class StartupNotifierService(HrDirectorService hrDirectorService, IPublishEndpoint publishEndpoint)
+public class StartupNotifierService(IHrDirectorService hrDirectorService, IPublishEndpoint publishEndpoint)
     
 {
     public async Task StartAsync(CancellationToken cancellationToken)

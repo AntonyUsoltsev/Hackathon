@@ -2,9 +2,9 @@ using EmployeeService.Model;
 using HrDirector.Service;
 using MassTransit;
 
-namespace HrManager.MassTransit;
+namespace HrDirector.MassTransit;
 
-public class WishlistConsumer(HrDirectorService hrDirectorService) : IConsumer<DTO>
+public class WishlistConsumer(IHrDirectorService iHrDirectorService) : IConsumer<DTO>
 {
     public async Task Consume(ConsumeContext<DTO> context)
     {
@@ -14,11 +14,11 @@ public class WishlistConsumer(HrDirectorService hrDirectorService) : IConsumer<D
         switch (dto.Role)
         {
             case Role.Junior:
-                hrDirectorService.SaveJuniorWishlist(dto);
+                iHrDirectorService.SaveJuniorWishlist(dto);
                 Console.WriteLine("Processed junior wishlist.");
                 break;
             case Role.TeamLead:
-                hrDirectorService.SaveTeamleadWishlist(dto);
+                iHrDirectorService.SaveTeamLeadWishlist(dto);
                 Console.WriteLine("Processed team lead wishlist.");
                 break;
             default:

@@ -1,11 +1,28 @@
 using HrDirector.DataBase;
+using HrDirector.MassTransit;
 using HrDirector.Repository;
 using HrDirector.Service;
-using HrManager.MassTransit;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<StartupNotifierService>();
+builder.Services.AddScoped<IHrDirectorService, HrDirectorService>();
+
+builder.Services.AddScoped<SatisfactionRepository>();
+builder.Services.AddScoped<HackathonRepository>();
+builder.Services.AddScoped<TeamRepository>();
+builder.Services.AddScoped<WishlistRepository>();
+builder.Services.AddSingleton<DataStore>();
+
+builder.Configuration.AddEnvironmentVariables();
 
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<HackathonContext>(options => options.UseNpgsql(connectionString));
@@ -30,24 +47,8 @@ builder.Services.AddMassTransit(busConfigurator =>
     });
 });
 
-builder.Services.AddControllers();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddHttpClient();
-
-builder.Services.AddScoped<StartupNotifierService>();
-builder.Services.AddScoped<HrDirectorService>();
-
-builder.Services.AddScoped<SatisfactionRepository>();
-builder.Services.AddScoped<HackathonRepository>();
-builder.Services.AddScoped<TeamRepository>();
-builder.Services.AddScoped<WishlistRepository>();
-
-builder.Configuration.AddEnvironmentVariables();
 
 var app = builder.Build();
-
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -55,8 +56,6 @@ app.ApplyMigrations();
 app.UseRouting();
 
 app.MapControllers();
-app.MapGet("/", () => "Hello, World!");
-
 
 await app.UseStartupNotifier();
 

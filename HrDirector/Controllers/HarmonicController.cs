@@ -8,7 +8,7 @@ namespace HrDirector.Controllers;
 
 [Route("api/harmony")]
 [ApiController]
-public class HarmonicController(HrDirectorService hrDirectorService) : ControllerBase
+public class HarmonicController(IHrDirectorService hrDirectorService) : ControllerBase
 {
     [HttpPost]
     public IActionResult CalculateHarmony([FromBody] TeamsMessage teamsMessage)

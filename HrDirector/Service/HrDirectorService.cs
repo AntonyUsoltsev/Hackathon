@@ -9,19 +9,16 @@ public class HrDirectorService(
     SatisfactionRepository satisfactionRepository,
     HackathonRepository hackathonRepository,
     TeamRepository teamRepository,
-    WishlistRepository wishlistRepository)
+    WishlistRepository wishlistRepository,
+    DataStore dataStore) : IHrDirectorService
 {
-    private List<Wishlist> _teamLeadsWishlists = [];
-    private List<Wishlist> _juniorsWishlists = [];
-    private IEnumerable<Team> _teams = [];
     private readonly object _lock = new object();
-
-
-    public void SaveTeamleadWishlist(DTO dto)
+    
+    public void SaveTeamLeadWishlist(DTO dto)
     {
         lock (_lock)
         {
-            _teamLeadsWishlists.Add(dto.Wishlist);
+            dataStore.AddTeamLeadWishlist(dto.hackathonId, dto.Wishlist);
             TryCalculateHarmony(dto.hackathonId);
         }
     }
@@ -30,7 +27,7 @@ public class HrDirectorService(
     {
         lock (_lock)
         {
-            _juniorsWishlists.Add(dto.Wishlist);
+            dataStore.AddJuniorWishlist(dto.hackathonId, dto.Wishlist);
             TryCalculateHarmony(dto.hackathonId);
         }
     }
@@ -39,22 +36,28 @@ public class HrDirectorService(
     {
         lock (_lock)
         {
-            _teams = teams;
+            dataStore.SetTeams(hackathonId, teams);
             TryCalculateHarmony(hackathonId);
         }
     }
 
     private void TryCalculateHarmony(int hackathonId)
     {
-        Console.WriteLine($"{_teams.Count()},{_teamLeadsWishlists.Count}, {_juniorsWishlists.Count} ");
-        if (_teams.Count() != 0)
+        List<Wishlist> teamLeadsWishlists = dataStore.GetTeamLeadWishlists(hackathonId);
+        List<Wishlist> juniorWishlists = dataStore.GetJuniorWishlists(hackathonId);
+        IEnumerable<Team> teams = dataStore.GetTeams(hackathonId);
+        Console.WriteLine(
+            $"Current team leads: {teamLeadsWishlists.Count}, current juniors: {juniorWishlists.Count}, currentTeams: {teams.Count()}");
+        if (teams.Count() != 0 &&
+            juniorWishlists.Count == teams.Count() &&
+            teamLeadsWishlists.Count == teams.Count())
         {
-            SaveTeamsInDb(_teams, hackathonId);
-            SaveWishlistsInDb(_teamLeadsWishlists, _juniorsWishlists, hackathonId);
+            SaveTeamsInDb(teams, hackathonId);
+            SaveWishlistsInDb(teamLeadsWishlists, juniorWishlists, hackathonId);
             Console.WriteLine("Start calculating harmony");
-            double satisfaction = CalculateHarmony(_teams, _teamLeadsWishlists, _juniorsWishlists, hackathonId);
+            double satisfaction = CalculateHarmony(teams, teamLeadsWishlists, juniorWishlists, hackathonId);
             UpdateHackathonResult(satisfaction, hackathonId);
-            Console.WriteLine(satisfaction);
+            Console.WriteLine($"Satisfaction {satisfaction}");
         }
     }
 
