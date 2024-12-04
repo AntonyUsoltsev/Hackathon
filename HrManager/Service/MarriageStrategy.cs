@@ -1,4 +1,5 @@
-using Contract;
+using EmployeeService.Model;
+using HrManager.Model;
 
 namespace HrManager.Service;
 

@@ -1,4 +1,4 @@
-using Contract;
+using EmployeeService.Model;
 using EmployeeService.Util;
 using MassTransit;
 
@@ -65,7 +65,7 @@ public class BuildWishlistService
 
     private async Task SendWishlistToHrManager(Wishlist wishlist, int hackathonId)
     {
-        WishlistMessage dto = new WishlistMessage(wishlist, _employeeType, hackathonId);
+        DTO dto = new DTO(wishlist, _employeeType, hackathonId);
         Console.WriteLine($"Sending wishlist to HR manager by RabbitMQ: {JsonContent.Create(dto).Value}");
 
         try

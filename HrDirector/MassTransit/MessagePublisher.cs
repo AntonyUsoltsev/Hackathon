@@ -1,4 +1,3 @@
-using Contract;
 using MassTransit;
 
 namespace HrDirector.MassTransit;

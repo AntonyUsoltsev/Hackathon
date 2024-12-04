@@ -1,9 +1,10 @@
-using Contract;
+using EmployeeService.Model;
+using HrManager.Model;
 using HrManager.Util;
 
 namespace HrManager.Service;
 
-public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clientFactory) : ITeamBuilder
+public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clientFactory) :ITeamBuilder
 {
     private readonly IEnumerable<Employee> _teamLeads =
         (IEnumerable<Employee>?)CsvReader.ReadCsv("Resources/Teamleads5.csv") ??
@@ -21,7 +22,7 @@ public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clie
     private readonly object _lock = new object();
 
 
-    public void SaveTeamLeadWishlist(WishlistMessage dto)
+    public void SaveTeamLeadWishlist(DTO dto)
     {
         lock (_lock)
         {
@@ -30,7 +31,7 @@ public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clie
         }
     }
 
-    public void SaveJuniorWishlist(WishlistMessage dto)
+    public void SaveJuniorWishlist(DTO dto)
     {
         lock (_lock)
         {
@@ -41,14 +42,12 @@ public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clie
 
     private void TryFormTeams(int hackathonId)
     {
-        Console.WriteLine(
-            $"Current team leads: {_teamLeadsWishlists.Count}, current juniors: {_juniorsWishlists.Count}, allTeamLeads: {_teamLeads.Count()}, allJuniors: {_juniors.Count()}");
+        Console.WriteLine($"Current team leads: {_teamLeadsWishlists.Count}, current juniors: {_juniorsWishlists.Count}, allTeamLeads: {_teamLeads.Count()}, allJuniors: {_juniors.Count()}");
         if (_teamLeadsWishlists.Count == _teamLeads.Count() &&
             _juniorsWishlists.Count == _juniors.Count())
         {
             Console.WriteLine("Start building teams");
-            IEnumerable<Team> formedTeams =
-                strategy.BuildTeams(_teamLeads, _juniors, _teamLeadsWishlists, _juniorsWishlists);
+            IEnumerable<Team> formedTeams = strategy.BuildTeams(_teamLeads, _juniors, _teamLeadsWishlists, _juniorsWishlists);
             SendTeamsToDirector(formedTeams, hackathonId);
         }
     }
@@ -56,11 +55,11 @@ public class TeamBuilder(ITeamBuildingStrategy strategy, IHttpClientFactory clie
     private async void SendTeamsToDirector(IEnumerable<Team> formedTeams, int hackathonId)
     {
         using var client = clientFactory.CreateClient();
-        var teamsMessage = new TeamsMessage(formedTeams, hackathonId);
-
-        Console.WriteLine($"Send data to HR director:{JsonContent.Create(teamsMessage).Value}");
-
-        var response = await client.PostAsJsonAsync(_hrDirectorUrl, teamsMessage);
+        var allDataDto = new TeamsMessage(formedTeams, hackathonId);
+        
+        Console.WriteLine($"Send data to HR director:{JsonContent.Create(allDataDto).Value}");
+        
+        var response = await client.PostAsJsonAsync(_hrDirectorUrl, allDataDto);
 
         Console.WriteLine(response.IsSuccessStatusCode
             ? "Wishlist and teams sent successfully to HR Director."

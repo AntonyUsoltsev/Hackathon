@@ -1,5 +1,7 @@
-using Contract;
+using HrDirector.MassTransit;
+using HrDirector.Model;
 using HrDirector.Service;
+using HrManager.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HrDirector.Controllers;
@@ -11,16 +13,8 @@ public class HarmonicController(HrDirectorService hrDirectorService) : Controlle
     [HttpPost]
     public IActionResult CalculateHarmony([FromBody] TeamsMessage teamsMessage)
     {
-        Console.WriteLine("CalculateHarmony method called");
-        
-        // hrDirectorService.SaveTeams(teamsMessage.formedTeams, teamsMessage.hackathonId);
-        // hrDirectorService.SaveWishlists(teamsMessage.teamLeadsWishlists, teamsMessage.juniorsWishlists, teamsMessage.hackathonId);
-
-        double satisfaction = hrDirectorService.CalculateHarmony(teamsMessage.formedTeams, teamsMessage.teamLeadsWishlists,
-            teamsMessage.juniorsWishlists, teamsMessage.hackathonId);
-        // hrDirectorService.UpdateHackathonResult(satisfaction, teamsMessage.hackathonId);
-
-        Console.WriteLine($"Satisfaction: {satisfaction}");
+        Console.WriteLine($"CalculateHarmony method called. {teamsMessage}");
+        hrDirectorService.SaveTeams(teamsMessage.formedTeams, teamsMessage.hackathonId);
         return Ok();
     }
 }

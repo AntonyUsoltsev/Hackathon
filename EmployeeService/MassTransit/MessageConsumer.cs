@@ -1,5 +1,5 @@
-using Contract;
 using EmployeeService.Service;
+using HrDirector.MassTransit;
 using MassTransit;
 
 namespace EmployeeService.MassTransit;

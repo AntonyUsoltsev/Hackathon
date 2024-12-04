@@ -1,4 +1,5 @@
-using Contract;
+using EmployeeService.Model;
+using HrManager.Model;
 using HrManager.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +10,7 @@ namespace HrManager.Controllers;
 public class TeamsController(ITeamBuilder iTeamBuilder) : ControllerBase
 {
     [HttpPost("junior-wishlist")]
-    public IActionResult SubmitJuniorPreferences([FromBody] WishlistMessage dto)
+    public IActionResult SubmitJuniorPreferences([FromBody] DTO dto)
     {
         iTeamBuilder.SaveJuniorWishlist(dto);
         Console.WriteLine($"Junior wishlist received: {dto}");
@@ -17,7 +18,7 @@ public class TeamsController(ITeamBuilder iTeamBuilder) : ControllerBase
     }
 
     [HttpPost("teamlead-wishlist")]
-    public IActionResult SubmitTeamLeadPreferences([FromBody] WishlistMessage dto)
+    public IActionResult SubmitTeamLeadPreferences([FromBody] DTO dto)
     {
         iTeamBuilder.SaveTeamLeadWishlist(dto);
         Console.WriteLine($"Teamlead wishlist received: {dto}");

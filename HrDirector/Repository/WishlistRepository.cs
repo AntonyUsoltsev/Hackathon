@@ -1,7 +1,6 @@
-using Contract;
+using EmployeeService.Model;
 using HrDirector.DataBase;
 using HrDirector.DataBase.Dto;
-using HrDirector.Model;
 
 namespace HrDirector.Repository;
 

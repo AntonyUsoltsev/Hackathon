@@ -43,9 +43,9 @@ services:
     hostname: rabbitmq
     restart: always
     environment:
-        RABBITMQ_DEFAULT_USER: rmuser
-        RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-        RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit disk_free_limit 2147483648
+      RABBITMQ_DEFAULT_USER: rmuser
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit disk_free_limit 2147483648
     volumes:
       - ./.containers/rabbitmq/data:/var/lib/rabbitmq
       - ./.containers/rabbitmq/logs:/var/log/rabbitmq
@@ -54,8 +54,8 @@ services:
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s
-      timeout: 5s
-      retries: 5
+      timeout: 10s
+      retries: 10  
 
   hr-director:
     build:
@@ -73,9 +73,8 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
-      hackathon_database:
-        condition: service_healthy
   
+
   hr-manager:
     build:
       context: .
@@ -95,6 +94,7 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+  
 
   junior-1:
     <<: *employee-service
@@ -104,6 +104,10 @@ services:
       - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${JUNIOR_1_PORT}:${JUNIOR_1_INTERNAL_PORT}"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+  
 
   junior-2:
     <<: *employee-service
@@ -113,6 +117,10 @@ services:
       - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${JUNIOR_2_PORT}:${JUNIOR_2_INTERNAL_PORT}"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+  
 
   junior-3:
     <<: *employee-service
@@ -122,6 +130,7 @@ services:
       - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${JUNIOR_3_PORT}:${JUNIOR_3_INTERNAL_PORT}"
+  
 
   junior-4:
     <<: *employee-service
@@ -131,6 +140,7 @@ services:
       - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${JUNIOR_4_PORT}:${JUNIOR_4_INTERNAL_PORT}"
+  
 
   junior-5:
     <<: *employee-service
@@ -141,7 +151,7 @@ services:
     ports:
       - "${JUNIOR_5_PORT}:${JUNIOR_5_INTERNAL_PORT}"
   
-  
+
   teamlead-1:
     <<: *employee-service
     environment:
@@ -150,6 +160,7 @@ services:
       - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${TEAMLEAD_1_PORT}:${TEAMLEAD_1_INTERNAL_PORT}"
+  
 
   teamlead-2:
     <<: *employee-service
@@ -159,6 +170,7 @@ services:
       - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${TEAMLEAD_2_PORT}:${TEAMLEAD_2_INTERNAL_PORT}"
+  
 
   teamlead-3:
     <<: *employee-service
@@ -168,6 +180,7 @@ services:
       - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${TEAMLEAD_3_PORT}:${TEAMLEAD_3_INTERNAL_PORT}"
+  
 
   teamlead-4:
     <<: *employee-service
@@ -177,6 +190,7 @@ services:
       - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${TEAMLEAD_4_PORT}:${TEAMLEAD_4_INTERNAL_PORT}"
+  
 
   teamlead-5:
     <<: *employee-service
@@ -186,3 +200,4 @@ services:
       - HR_MANAGER_URL=http://hr-manager:${HR_MANAGER_INTERNAL_PORT}/api/teams/{EMPLOYEE_TYPE}-wishlist
     ports:
       - "${TEAMLEAD_5_PORT}:${TEAMLEAD_5_INTERNAL_PORT}"
+  

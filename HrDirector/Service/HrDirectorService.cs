@@ -1,4 +1,4 @@
-using Contract;
+using EmployeeService.Model;
 using HrDirector.DataBase.Dto;
 using HrDirector.Model;
 using HrDirector.Repository;
@@ -11,6 +11,53 @@ public class HrDirectorService(
     TeamRepository teamRepository,
     WishlistRepository wishlistRepository)
 {
+    private List<Wishlist> _teamLeadsWishlists = [];
+    private List<Wishlist> _juniorsWishlists = [];
+    private IEnumerable<Team> _teams = [];
+    private readonly object _lock = new object();
+
+
+    public void SaveTeamleadWishlist(DTO dto)
+    {
+        lock (_lock)
+        {
+            _teamLeadsWishlists.Add(dto.Wishlist);
+            TryCalculateHarmony(dto.hackathonId);
+        }
+    }
+
+    public void SaveJuniorWishlist(DTO dto)
+    {
+        lock (_lock)
+        {
+            _juniorsWishlists.Add(dto.Wishlist);
+            TryCalculateHarmony(dto.hackathonId);
+        }
+    }
+
+    public void SaveTeams(IEnumerable<Team> teams, int hackathonId)
+    {
+        lock (_lock)
+        {
+            _teams = teams;
+            TryCalculateHarmony(hackathonId);
+        }
+    }
+
+    private void TryCalculateHarmony(int hackathonId)
+    {
+        Console.WriteLine($"{_teams.Count()},{_teamLeadsWishlists.Count}, {_juniorsWishlists.Count} ");
+        if (_teams.Count() != 0)
+        {
+            SaveTeamsInDb(_teams, hackathonId);
+            SaveWishlistsInDb(_teamLeadsWishlists, _juniorsWishlists, hackathonId);
+            Console.WriteLine("Start calculating harmony");
+            double satisfaction = CalculateHarmony(_teams, _teamLeadsWishlists, _juniorsWishlists, hackathonId);
+            UpdateHackathonResult(satisfaction, hackathonId);
+            Console.WriteLine(satisfaction);
+        }
+    }
+
     public double CalculateHarmony(IEnumerable<Team> teams,
         IEnumerable<Wishlist> teamLeadsWishlists,
         IEnumerable<Wishlist> juniorsWishlists,
@@ -31,6 +78,7 @@ public class HrDirectorService(
             satisfactionRepository.SaveSatisfaction(hackathonId, team.Junior.Id, juniorSat);
         }
 
+
         return HarmonicMeanCount.CountHarmonicMean(allSatisfactions);
     }
 
@@ -39,12 +87,12 @@ public class HrDirectorService(
         return hackathonRepository.CreateEmptyHackathon();
     }
 
-    public void SaveTeams(IEnumerable<Team> formedTeams, int hackathonId)
+    public void SaveTeamsInDb(IEnumerable<Team> formedTeams, int hackathonId)
     {
         formedTeams.ToList().ForEach(team => teamRepository.SaveTeam(team, hackathonId));
     }
 
-    public void SaveWishlists(List<Wishlist> teamLeadsWishlists, List<Wishlist> juniorsWishlists, int hackathonId)
+    public void SaveWishlistsInDb(List<Wishlist> teamLeadsWishlists, List<Wishlist> juniorsWishlists, int hackathonId)
     {
         juniorsWishlists.ForEach(wl => wishlistRepository.SaveWishlist(wl, hackathonId));
         teamLeadsWishlists.ForEach(wl => wishlistRepository.SaveWishlist(wl, hackathonId));

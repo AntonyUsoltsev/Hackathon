@@ -1,6 +1,7 @@
 using HrDirector.DataBase;
 using HrDirector.Repository;
 using HrDirector.Service;
+using HrManager.MassTransit;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,8 @@ builder.Services.AddMassTransit(busConfigurator =>
 {
     busConfigurator.SetKebabCaseEndpointNameFormatter();
 
+    busConfigurator.AddConsumer<WishlistConsumer>();
+
     busConfigurator.UsingRabbitMq((context, configurator) =>
     {
         configurator.Host(new Uri(builder.Configuration["MessageBroker:Host"]!), h =>
@@ -20,6 +23,9 @@ builder.Services.AddMassTransit(busConfigurator =>
             h.Username(builder.Configuration["MessageBroker:Username"]);
             h.Password(builder.Configuration["MessageBroker:Password"]);
         });
+        configurator.ReceiveEndpoint("get_wishlist_in_director_queue",
+            e => { e.ConfigureConsumer<WishlistConsumer>(context); });
+
         configurator.ConfigureEndpoints(context);
     });
 });
@@ -42,7 +48,6 @@ builder.Configuration.AddEnvironmentVariables();
 
 var app = builder.Build();
 
-await app.UseStartupNotifier();
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -51,4 +56,8 @@ app.UseRouting();
 
 app.MapControllers();
 app.MapGet("/", () => "Hello, World!");
+
+
+await app.UseStartupNotifier();
+
 app.Run();
