@@ -51,6 +51,8 @@ services:
       - ./.containers/rabbitmq/logs:/var/log/rabbitmq
     networks:
       - hackathon_network
+    ports:
+      - "5672:5672"
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s

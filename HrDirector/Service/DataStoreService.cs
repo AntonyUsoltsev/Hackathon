@@ -15,7 +15,7 @@ public class DataStore
         {
             _teamLeadsWishlists[hackathonId] = [];
         }
-        Console.WriteLine($"Saving team leads wishlist in hackathon {hackathonId}, wishlist {wishlist}");
+        // Console.WriteLine($"Saving team leads wishlist in hackathon {hackathonId}, wishlist {wishlist}");
         _teamLeadsWishlists[hackathonId].Add(wishlist);
     }
 
@@ -25,13 +25,13 @@ public class DataStore
         {
             _juniorsWishlists[hackathonId] = [];
         }
-        Console.WriteLine($"Saving juniors wishlist in hackathon {hackathonId}, wishlist {wishlist}");
+        // Console.WriteLine($"Saving juniors wishlist in hackathon {hackathonId}, wishlist {wishlist}");
         _juniorsWishlists[hackathonId].Add(wishlist);
     }
 
     public void SetTeams(int hackathonId, IEnumerable<Team> teams)
     {
-        Console.WriteLine($"Saving teams in hackathon {hackathonId}, teams {teams}");
+        // Console.WriteLine($"Saving teams in hackathon {hackathonId}, teams {teams}");
         _teams[hackathonId] = teams;
     }
 

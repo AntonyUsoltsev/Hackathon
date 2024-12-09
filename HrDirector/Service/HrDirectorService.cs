@@ -46,18 +46,17 @@ public class HrDirectorService(
         List<Wishlist> teamLeadsWishlists = dataStore.GetTeamLeadWishlists(hackathonId);
         List<Wishlist> juniorWishlists = dataStore.GetJuniorWishlists(hackathonId);
         IEnumerable<Team> teams = dataStore.GetTeams(hackathonId);
-        Console.WriteLine(
-            $"Current team leads: {teamLeadsWishlists.Count}, current juniors: {juniorWishlists.Count}, currentTeams: {teams.Count()}");
+        // Console.WriteLine($"Current team leads: {teamLeadsWishlists.Count}, current juniors: {juniorWishlists.Count}, currentTeams: {teams.Count()}");
         if (teams.Count() != 0 &&
             juniorWishlists.Count == teams.Count() &&
             teamLeadsWishlists.Count == teams.Count())
         {
             SaveTeamsInDb(teams, hackathonId);
             SaveWishlistsInDb(teamLeadsWishlists, juniorWishlists, hackathonId);
-            Console.WriteLine("Start calculating harmony");
+            // Console.WriteLine("Start calculating harmony");
             double satisfaction = CalculateHarmony(teams, teamLeadsWishlists, juniorWishlists, hackathonId);
             UpdateHackathonResult(satisfaction, hackathonId);
-            Console.WriteLine($"Satisfaction {satisfaction}");
+            Console.WriteLine($"Satisfaction on hackathon id {hackathonId} is: {satisfaction}");
         }
     }
 

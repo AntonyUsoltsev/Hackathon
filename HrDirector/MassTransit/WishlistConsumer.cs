@@ -9,17 +9,17 @@ public class WishlistConsumer(IHrDirectorService iHrDirectorService) : IConsumer
     public async Task Consume(ConsumeContext<DTO> context)
     {
         var dto = context.Message;
-        Console.WriteLine($"Received wishlist from RabbitMQ: {dto}");
+        // Console.WriteLine($"Received wishlist from RabbitMQ: {dto}");
 
         switch (dto.Role)
         {
             case Role.Junior:
                 iHrDirectorService.SaveJuniorWishlist(dto);
-                Console.WriteLine("Processed junior wishlist.");
+                // Console.WriteLine("Processed junior wishlist.");
                 break;
             case Role.TeamLead:
                 iHrDirectorService.SaveTeamLeadWishlist(dto);
-                Console.WriteLine("Processed team lead wishlist.");
+                // Console.WriteLine("Processed team lead wishlist.");
                 break;
             default:
                 Console.WriteLine("Unknown role type, ignoring message.");

@@ -25,7 +25,11 @@ builder.Services.AddSingleton<DataStore>();
 builder.Configuration.AddEnvironmentVariables();
 
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<HackathonContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddDbContext<HackathonContext>(options => options.UseNpgsql(connectionString).LogTo(Console.WriteLine, LogLevel.None));
+builder.Logging.ClearProviders(); 
+
+builder.Logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning);
+builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
 
 builder.Services.AddMassTransit(busConfigurator =>
 {
@@ -57,6 +61,6 @@ app.UseRouting();
 
 app.MapControllers();
 
-await app.UseStartupNotifier();
+await app.UseStartupNotifier(app.Services);
 
 app.Run();
