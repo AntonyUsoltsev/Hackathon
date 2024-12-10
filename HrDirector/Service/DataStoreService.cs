@@ -1,5 +1,6 @@
 using EmployeeService.Model;
 using HrDirector.Model;
+using HrManager.Model;
 
 namespace HrDirector.Service;
 

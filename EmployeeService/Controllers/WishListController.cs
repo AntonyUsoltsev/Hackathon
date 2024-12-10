@@ -1,4 +1,4 @@
-using Contract;
+using EmployeeService.Model;
 using EmployeeService.Util;
 using Microsoft.AspNetCore.Mvc;
 

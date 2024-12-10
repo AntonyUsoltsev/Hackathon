@@ -2,6 +2,7 @@ using EmployeeService.Model;
 using HrDirector.DataBase.Dto;
 using HrDirector.Model;
 using HrDirector.Repository;
+using HrManager.Model;
 
 namespace HrDirector.Service;
 
